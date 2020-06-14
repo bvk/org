@@ -1,0 +1,691 @@
+#+TITLE: Config in Org-Mode
+
+This is an experiment to configure my systems using a single, org-publish
+command.
+
+Normally, I have a git repo with configuration files for all tools, but I have
+to manually setup the symlinks to their respective dot files.
+
+See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-simultaneously-in-org-mode][How to Publish using org-mode]]
+
+* Environment
+
+	Prefix $HOME/bin and $HOME/go/bin to PATH so that I can override the tools
+	with custom versions. Also, the $HOME/bin directory should only have symlinks
+	so that proper version can be selected. For example, when multiple go
+	compiler versions (go1.13, go1.15, etc.), the $HOME/bin/go symlink determines
+	which one to use by default.
+
+	#+BEGIN_SRC bash :tangle ~/.environment
+	export PATH=$HOME/bin:$HOME/go/bin:$PATH
+	#+END_SRC
+
+	Almost all machines have enough disk space, so there is no need to lose
+	command history anymore. Keep the in-memory command history limited, but
+	history file size should be practically unlimited. Also make the shell append
+	to the history file after every command, so that history file accumulates
+	from multiple open shells simultaneously.
+
+	#+BEGIN_SRC bash :tangle ~/.environment
+	export HISTSIZE=1000
+	export HISTFILESIZE=10000000
+	export PROMPT_COMMAND='history -a'
+  #+END_SRC
+
+* OS Packages
+
+	Perhaps, we should split these commands their respective config file
+	sections.
+
+	#+BEGIN_SRC bash
+	apt-get install -y build-essential
+	apt-get install -y golang-go
+	apt-get install -y git
+
+	apt-get install -y screen
+
+	apt-get install -y xserver-xorg
+	apt-get install -y xdg-utils
+	apt-get install -y xterm
+	apt-get install -y rxvt-unicode
+	#+END_SRC
+
+** Switch to Golang-1.14
+
+	 #+BEGIN_SRC bash
+	 go get golang.org/dl/go1.14
+	 go1.14 download
+	 ln -snf $HOME/go/bin/go1.14 $HOME/bin/go
+	 #+END_SRC
+
+* Dot Files
+
+	We setup all dot files (and directories) here. All codeblocks are configured
+	with org-babel-tangle target, so when users run org-babel-tangle command it
+	will overwrite the existing dot files.
+
+** ~/.emacs
+
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
+		 (package-initialize)
+		 (unless (boundp 'my-org-config-loading)
+			 (progn
+				 (setq my-org-config-loading t)
+				 (when (require 'org nil 'noerror)
+					 (message "loading config.org with org-bable-load-file")
+					 (org-babel-load-file "~/org/config.org"))))
+	 #+END_SRC
+
+	 Above block configures ~/.emacs file to load all emacs-lisp codeblocks in
+	 this file using org-babel-load-file -- except for the above block which is
+	 already run from the ~/.emacs file.
+
+*** TODO Why not we just create ~/.emacs file like all other dot-files?
+
+** ~/.bashrc
+
+	 Copy the default Debian .bashrc content first and then override it with our
+	 customizations. This will ensure that we get a familiar environment
+	 everywhere.
+
+	 #+BEGIN_SRC bash :tangle ~/.bashrc
+		 # ~/.bashrc: executed by bash(1) for non-login shells.
+		 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+		 # for examples
+
+		 # If not running interactively, don't do anything
+		 case $- in
+				 ,*i*) ;;
+					 ,*) return;;
+		 esac
+
+		 # don't put duplicate lines or lines starting with space in the history.
+		 # See bash(1) for more options
+		 HISTCONTROL=ignoreboth
+
+		 # append to the history file, don't overwrite it
+		 shopt -s histappend
+
+		 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+		 HISTSIZE=1000
+		 HISTFILESIZE=2000
+
+		 # check the window size after each command and, if necessary,
+		 # update the values of LINES and COLUMNS.
+		 shopt -s checkwinsize
+
+		 # If set, the pattern "**" used in a pathname expansion context will
+		 # match all files and zero or more directories and subdirectories.
+		 #shopt -s globstar
+
+		 # make less more friendly for non-text input files, see lesspipe(1)
+		 #[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+		 # set variable identifying the chroot you work in (used in the prompt below)
+		 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+				 debian_chroot=$(cat /etc/debian_chroot)
+		 fi
+
+		 # set a fancy prompt (non-color, unless we know we "want" color)
+		 case "$TERM" in
+				 xterm-color|*-256color) color_prompt=yes;;
+		 esac
+
+		 # uncomment for a colored prompt, if the terminal has the capability; turned
+		 # off by default to not distract the user: the focus in a terminal window
+		 # should be on the output of commands, not on the prompt
+		 #force_color_prompt=yes
+
+		 if [ -n "$force_color_prompt" ]; then
+				 if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+			 # We have color support; assume it's compliant with Ecma-48
+			 # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+			 # a case would tend to support setf rather than setaf.)
+			 color_prompt=yes
+				 else
+			 color_prompt=
+				 fi
+		 fi
+
+		 if [ "$color_prompt" = yes ]; then
+				 PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+		 else
+				 PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+		 fi
+		 unset color_prompt force_color_prompt
+
+		 # If this is an xterm set the title to user@host:dir
+		 case "$TERM" in
+		 xterm*|rxvt*)
+				 PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+				 ;;
+		 ,*)
+				 ;;
+		 esac
+
+		 # enable color support of ls and also add handy aliases
+		 if [ -x /usr/bin/dircolors ]; then
+				 test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+				 alias ls='ls --color=auto'
+				 #alias dir='dir --color=auto'
+				 #alias vdir='vdir --color=auto'
+
+				 #alias grep='grep --color=auto'
+				 #alias fgrep='fgrep --color=auto'
+				 #alias egrep='egrep --color=auto'
+		 fi
+
+		 # colored GCC warnings and errors
+		 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+		 # some more ls aliases
+		 #alias ll='ls -l'
+		 #alias la='ls -A'
+		 #alias l='ls -CF'
+
+		 # Alias definitions.
+		 # You may want to put all your additions into a separate file like
+		 # ~/.bash_aliases, instead of adding them here directly.
+		 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+		 if [ -f ~/.bash_aliases ]; then
+				 . ~/.bash_aliases
+		 fi
+
+		 # enable programmable completion features (you don't need to enable
+		 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+		 # sources /etc/bash.bashrc).
+		 if ! shopt -oq posix; then
+			 if [ -f /usr/share/bash-completion/bash_completion ]; then
+				 . /usr/share/bash-completion/bash_completion
+			 elif [ -f /etc/bash_completion ]; then
+				 . /etc/bash_completion
+			 fi
+		 fi
+	 #+END_SRC
+
+	 Override it with our environement. We use ~/.environement file for our
+	 customizations, so that (1) we keep ~/.bashrc as pristine as possible for
+	 system upgrades and (2) our customizations are easily accessible and
+	 tracked.
+
+	 #+BEGIN_SRC bash :tangle ~/.bashrc
+   # User customizations.
+	 . $HOME/.environment
+	 #+END_SRC
+
+** ~/.screenrc
+
+	 Copy the default screen configuration from /etc/screenrc file and override
+	 it with our customizations at the end.
+
+	 #+BEGIN_SRC text :tangle ~/.screenrc
+		 # $Id: screenrc,v 1.15 2003/10/08 11:39:03 zal Exp $
+		 #
+		 # /etc/screenrc
+		 #
+		 #   This is the system wide screenrc.
+		 #
+		 #   You can use this file to change the default behavior of screen system wide
+		 #   or copy it to ~/.screenrc and use it as a starting point for your own
+		 #   settings.
+		 #
+		 #   Commands in this file are used to set options, bind screen functions to
+		 #   keys, redefine terminal capabilities, and to automatically establish one or
+		 #   more windows at the beginning of your screen session.
+		 #
+		 #   This is not a comprehensive list of options, look at the screen manual for
+		 #   details on everything that you can put in this file.
+		 #
+
+		 # ------------------------------------------------------------------------------
+		 # SCREEN SETTINGS
+		 # ------------------------------------------------------------------------------
+
+		 #startup_message off
+		 #nethack on
+
+		 #defflow on # will force screen to process ^S/^Q
+		 deflogin on
+		 #autodetach off
+
+		 # turn visual bell on
+		 vbell on
+		 vbell_msg "   Wuff  ----  Wuff!!  "
+
+		 # define a bigger scrollback, default is 100 lines
+		 defscrollback 1024
+
+		 # ------------------------------------------------------------------------------
+		 # SCREEN KEYBINDINGS
+		 # ------------------------------------------------------------------------------
+
+		 # Remove some stupid / dangerous key bindings
+		 bind ^k
+		 #bind L
+		 bind ^\
+		 # Make them better
+		 bind \\ quit
+		 bind K kill
+		 bind I login on
+		 bind O login off
+		 bind } history
+
+		 # An example of a "screen scraper" which will launch urlview on the current
+		 # screen window
+		 #
+		 #bind ^B eval "hardcopy_append off" "hardcopy -h $HOME/.screen-urlview" "screen urlview $HOME/.screen-urlview"
+
+		 # ------------------------------------------------------------------------------
+		 # TERMINAL SETTINGS
+		 # ------------------------------------------------------------------------------
+
+		 # The vt100 description does not mention "dl". *sigh*
+		 termcapinfo vt100 dl=5\E[M
+
+		 # turn sending of screen messages to hardstatus off
+		 hardstatus off
+		 # Set the hardstatus prop on gui terms to set the titlebar/icon title
+		 termcapinfo xterm*|rxvt*|kterm*|Eterm* hs:ts=\E]0;:fs=\007:ds=\E]0;\007
+		 # use this for the hard status string
+		 hardstatus string "%h%? users: %u%?"
+
+		 # An alternative hardstatus to display a bar at the bottom listing the
+		 # windownames and highlighting the current windowname in blue. (This is only
+		 # enabled if there is no hardstatus setting for your terminal)
+		 #
+		 #hardstatus lastline "%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<"
+
+		 # set these terminals up to be 'optimal' instead of vt100
+		 termcapinfo xterm*|linux*|rxvt*|Eterm* OP
+
+		 # Change the xterm initialization string from is2=\E[!p\E[?3;4l\E[4l\E>
+		 # (This fixes the "Aborted because of window size change" konsole symptoms found
+		 #  in bug #134198)
+		 termcapinfo xterm 'is=\E[r\E[m\E[2J\E[H\E[?7h\E[?1;4;6l'
+
+		 # To get screen to add lines to xterm's scrollback buffer, uncomment the
+		 # following termcapinfo line which tells xterm to use the normal screen buffer
+		 # (which has scrollback), not the alternate screen buffer.
+		 #
+		 #termcapinfo xterm|xterms|xs|rxvt ti@:te@
+
+		 # Enable non-blocking mode to better cope with flaky ssh connections.
+		 defnonblock 5
+
+		 # ------------------------------------------------------------------------------
+		 # STARTUP SCREENS
+		 # ------------------------------------------------------------------------------
+
+		 # Example of automatically running some programs in windows on screen startup.
+		 #
+		 #   The following will open top in the first window, an ssh session to monkey
+		 #   in the next window, and then open mutt and tail in windows 8 and 9
+		 #   respectively.
+		 #
+		 # screen top
+		 # screen -t monkey ssh monkey
+		 # screen -t mail 8 mutt
+		 # screen -t daemon 9 tail -f /var/log/daemon.log
+	 #+END_SRC
+
+	 Override the defaults with our customizations.
+
+	 #+BEGIN_SRC text :tangle ~/.screenrc
+		 startup_message off
+	 #+END_SRC
+
+	 Default escape key C-a is very important, so move the escape key to C-z.
+
+	 #+BEGIN_SRC text :tangle ~/.screenrc
+		 escape 
+	 #+END_SRC
+
+	 Remove control-flow bindings for C-s and C-q cause they are not really
+	 useful and often conflict with normal work. Start
+
+	 #+BEGIN_SRC text :tangle ~/.screenrc
+		 bind ^s
+		 bind ^q
+	 #+END_SRC
+
+	 Start the first window at 1.
+
+	 #+BEGIN_SRC text :tangle ~/.screenrc
+		 screen -t shell 1 -/bin/bash
+	 #+END_SRC
+
+** ~/.fonts                                                          :ATTACH:
+	 :PROPERTIES:
+	 :ID:       d89df2d5-632b-41d8-b6b9-cc1107599d9e
+	 :DIR:      ~/org/fonts
+	 :END:
+
+	 We must create a ~/.fonts directory with custom font files. We use org-mode
+	 attachments to store the font files and use org-publish project to copy them
+	 into the ~/.fonts directory.
+
+	 When emacs loads this file using org-babel-load-file it will update the
+	 org-publish-project-alist with config-fonts for this task. When this project
+	 is published it will perform the necessary copying.
+
+	 #+BEGIN_SRC emacs-lisp
+		 (when (require 'ox-publish nil 'noerror)
+			 (add-to-list 'org-publish-project-alist
+							'("config-fonts"
+					:base-directory "~/org/fonts"
+					:base-extension "ttf"
+					:recursive nil
+					:publishing-directory "~/.fonts/"
+					:publishing-function org-publish-attachment)))
+	 #+END_SRC
+
+	 We can run emacs --eval '(org-publish "config-fonts")' to create the
+	 ~/.fonts directory.
+
+* Emacs
+** Personal Information
+
+	 #+BEGIN_SRC emacs-lisp
+	 (setq user-full-name "BVK Chaitanya")
+	 (setq user-mail-address "bvkchaitanya@gmail.com")
+	 #+END_SRC
+
+** TODO Load Paths
+
+	 We could get rid of this with attachments.
+
+	 #+BEGIN_SRC emacs-lisp
+		 (when (file-exists-p "~/config/emacs/emacs.d")
+			 (add-to-list 'load-path "~/config/emacs/emacs.d"))
+	 #+END_SRC
+
+** Customizations
+
+	 #+BEGIN_SRC emacs-lisp
+		 (setenv "PATH"
+			 (concat (getenv "HOME") "/bin" ":"
+				 (getenv "HOME") "/go/bin" ":"
+				 (getenv "PATH")))
+	 #+END_SRC
+
+	 #+BEGIN_SRC emacs-lisp
+	 (setq visible-bell t)
+	 (setq show-trailing-whitespace t)
+	 (setq split-height-threshold nil)             ; Disable vertical window splitting
+	 (setq display-time-day-and-date t)
+	 (setq confirm-kill-emacs 'yes-or-no-p)
+	 ; Merge system's and Emacs' clipboard.
+	 (setq select-enable-clipboard t)
+	 #+END_SRC
+
+	 #+BEGIN_SRC emacs-lisp
+	 (ido-mode t)
+	 (show-paren-mode 1)
+	 (menu-bar-mode 0)
+	 (tooltip-mode nil)
+	 (blink-cursor-mode 0)
+	 (display-time-mode 1)
+	 (column-number-mode 1)
+	 ;; emacs-nox has no scroll-bar-mode
+	 (when (functionp 'scroll-bar-mode)
+	   (scroll-bar-mode 0))
+	 ;; emacs-nox has no tool-bar-mode
+	 (when (functionp 'tool-bar-mode)
+	   (tool-bar-mode 0))
+	 #+END_SRC
+
+	 #+BEGIN_SRC emacs-lisp
+	 (add-to-list 'default-frame-alist '(right-fringe . 0))
+	 (add-to-list 'default-frame-alist '(cursor-color . "green"))
+	 #+END_SRC
+
+	 #+BEGIN_SRC emacs-lisp
+	 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+	 #+END_SRC
+
+** Fonts
+
+	 #+BEGIN_SRC emacs-lisp
+		 (defvar my-frame-font-list nil
+			 "List of font names for use with the my-frame-font-rotate
+			 function")
+		 (setq my-frame-font-index nil)
+		 (defun my-frame-font-rotate()
+			 "Update the frame font with next font name from the
+			 my-frame-font-list. Current font index is tracked in
+			 my-frame-font-index variable. If index is nil it will be
+			 initialized to zero; otherwise it will be incremented by one
+			 and may wrap around when reaches to end of the font list."
+			 (interactive)
+			 (when (> (length my-frame-font-list) 0)
+				 (let* ((num-font (length my-frame-font-list))
+					(last-index (if (integerp my-frame-font-index)
+							my-frame-font-index -1))
+					(next-index (mod (+ last-index 1) num-font))
+					(next-font (nth next-index my-frame-font-list)))
+					 (progn
+			 (set-frame-font next-font nil t)
+			 (message (format "font is set to %s at index %d" next-font next-index))
+			 (setq my-frame-font-index next-index)))))
+
+		 (add-to-list 'my-frame-font-list "6x12" t)
+		 (add-to-list 'my-frame-font-list "Ubuntu Mono-10:hintstyle=hintslight:rgba=rgb" t)
+		 (add-to-list 'my-frame-font-list "Ubuntu Mono-12:hintstyle=hintslight:rgba=rgb" t)
+		 (add-to-list 'my-frame-font-list "Ubuntu Mono-14:hintstyle=hintslight:rgba=rgb" t)
+		 (add-to-list 'my-frame-font-list "Ubuntu Mono-16:hintstyle=hintslight:rgba=rgb" t)
+		 (add-to-list 'my-frame-font-list "Ubuntu Mono-18:hintstyle=hintslight:rgba=rgb" t)
+		 (add-to-list 'my-frame-font-list "Ubuntu Mono-20:hintstyle=hintslight:rgba=rgb" t)
+		 (global-set-key (kbd "C-c f") 'my-frame-font-rotate)
+	 #+END_SRC
+
+** Magit
+	 #+BEGIN_SRC emacs-lisp
+		 (when (require 'magit nil 'noerror)
+			 (global-set-key (kbd "C-c g") 'magit-status))
+	 #+END_SRC
+** Orgmode
+	 #+BEGIN_SRC emacs-lisp
+		 (when (require 'org nil 'noerror)
+			 (setq org-directory (expand-file-name "~/org"))
+
+			 ;; org-capture config.
+			 (setq org-default-notes-file (concat org-directory "/notes.org"))
+			 (setq org-capture-templates
+			 '(("t" "Todo" entry (file+headline "~/org/tasks.org" "Tasks")
+								"* TODO %?\n  %i\n  %a")
+							 ("n" "Note" entry (file+datetree "~/org/notes.org")
+								"* %?\nEntered on %U\n  %i\n  %a")))
+
+			 (global-set-key (kbd "C-c l") 'org-store-link)
+			 (global-set-key (kbd "C-c a") 'org-agenda)
+			 (global-set-key (kbd "C-c c") 'org-capture))
+	 #+END_SRC
+** Packages
+	 #+BEGIN_SRC emacs-lisp
+		 (when (require 'package nil 'noerror)
+			 (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/")))
+	 #+END_SRC
+** Buffers
+	 #+BEGIN_SRC emacs-lisp
+		 (when (require 'uniquify nil 'noerror)
+			 (setq uniquify-buffer-name-style 'forward))
+	 #+END_SRC
+** Desktop Mode
+	 #+BEGIN_SRC emacs-lisp
+		 (require 'desktop)
+		 (setq desktop-save 1
+					 desktop-load-locked-desktop t
+					 desktop-dirname user-emacs-directory
+					 desktop-restore-frames nil
+					 ; Don't save remote files and/or *gpg files.
+					 desktop-files-not-to-save "\\(^/[^/:]*:\\|(ftp)$\\)\\|\\(\\.gpg$\\)")
+		 (desktop-save-mode 1)
+	 #+END_SRC
+** Column Marker Mode
+	 #+BEGIN_SRC emacs-lisp
+		 (when (require 'column-marker nil 'noerror)
+			 (progn
+				 (add-hook 'protobuf-mode-hook (lambda() (column-marker-1 80)))
+				 (add-hook 'c-mode-hook (lambda() (column-marker-1 80)))
+				 (add-hook 'c++-mode-hook (lambda() (column-marker-1 80)))))
+	 #+END_SRC
+** Protobuf Mode
+	 #+BEGIN_SRC emacs-lisp
+	 (when (require 'protobuf-mode nil 'noerror)
+	   (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
+     (add-hook 'protobuf-mode-hook (lambda() (column-marker-1 80))))
+	 #+END_SRC
+** Golang Mode
+	 #+BEGIN_SRC emacs-lisp
+		 (when (require 'go-mode nil 'noerror)
+		   (setq gofmt-command "goimports")
+			 (setq godoc-command "go doc -all"))
+	 #+END_SRC
+
+	 #+BEGIN_SRC emacs-lisp
+	 (when (require 'column-marker nil 'noerror)
+     (add-hook 'go-mode-hook (lambda() (column-marker-1 80))))
+	 #+END_SRC
+
+	 #+BEGIN_SRC emacs-lisp
+	 (when (require 'go-guru nil 'noerror)
+	   (add-hook 'go-mode-hook #'go-guru-hl-identifier-mode))
+	 #+END_SRC
+** Keybindings
+	 #+BEGIN_SRC emacs-lisp
+	   (global-unset-key (kbd "C-z"))
+	 #+END_SRC
+** Gtags
+	 #+BEGIN_SRC emacs-lisp
+		 (when (require 'gtags nil 'noerror)
+			 nil)
+	 #+END_SRC
+** TODO Directory Locals
+** Load the legacy config
+
+	We cannot migrate all our old emacs config at once, so just load the existing
+	config file. As we migrate each config item, we shall add it in here and
+	remove it from the existing config.
+
+	#+BEGIN_SRC emacs-lisp
+    ;(load-file "~/config/emacs/emacs.el")
+	#+END_SRC
+
+** Experiments
+* X11 Setup
+** ~/.Xresources
+*** XTerm
+
+		#+BEGIN_SRC text :tangle ~/.Xresources
+			xterm*metaSendsEscape: true
+			xterm*allowSendEvents: true
+			xterm*selectToClipboard: false
+			xterm*on2Clicks: regex [^/@ \n]+
+			xterm*on3Clicks: regex [^ \n]+
+			xterm*on4Clicks: regex [^#$]+
+			xterm*on5Clicks: line
+		#+END_SRC
+
+*** XFT settings
+
+		#+BEGIN_SRC text :tangle ~/.Xresources
+			Xft.dpi: 120
+			Xft.hintstyle: hintfull
+			Xft.lcdfilter: lcddefault
+			Xft.rgba: rgb
+			Xft.hinting: 1
+			Xft.autohint: 0
+			Xft.antialias: 1
+		#+END_SRC
+
+*** Solarized theme for Xterm.
+
+	 #+BEGIN_SRC text :tangle ~/.Xresources
+		 #define S_base03        #002b36
+		 #define S_base02        #073642
+		 #define S_base01        #586e75
+		 #define S_base00        #657b83
+		 #define S_base0         #839496
+		 #define S_base1         #93a1a1
+		 #define S_base2         #eee8d5
+		 #define S_base3         #fdf6e3
+
+		 ,*background:            S_base03
+		 ,*foreground:            S_base0
+		 ,*fadeColor:             S_base03
+		 ,*cursorColor:           S_base1
+		 ,*pointerColorBackground:S_base01
+		 ,*pointerColorForeground:S_base1
+
+		 #define S_yellow        #b58900
+		 #define S_orange        #cb4b16
+		 #define S_red           #dc322f
+		 #define S_magenta       #d33682
+		 #define S_violet        #6c71c4
+		 #define S_blue          #268bd2
+		 #define S_cyan          #2aa198
+		 #define S_green         #859900
+
+		 !! black dark/light
+		 ,*color0:                S_base02
+		 ,*color8:                S_base03
+
+		 !! red dark/light
+		 ,*color1:                S_red
+		 ,*color9:                S_orange
+
+		 !! green dark/light
+		 ,*color2:                S_green
+		 ,*color10:               S_base01
+
+		 !! yellow dark/light
+		 ,*color3:                S_yellow
+		 ,*color11:               S_base00
+
+		 !! blue dark/light
+		 ,*color4:                S_blue
+		 ,*color12:               S_base0
+
+		 !! magenta dark/light
+		 ,*color5:                S_magenta
+		 ,*color13:               S_violet
+
+		 !! cyan dark/light
+		 ,*color6:                S_cyan
+		 ,*color14:               S_base1
+
+		 !! white dark/light
+		 ,*color7:                S_base2
+		 ,*color15:               S_base3
+	 #+END_SRC
+
+** ~/.xsession
+
+	 Run an ssh-agent instance for the session.
+
+	 #+BEGIN_SRC bash :tangle ~/.xsession
+	   eval `ssh-agent`
+	 #+END_SRC
+
+	 #+BEGIN_SRC bash :tangle ~/.xsession
+	   xrdb -merge ~/.Xresources
+	 #+END_SRC
+
+	 #+BEGIN_SRC bash :tangle ~/.xsession
+		 # Start few applets.
+		 if which blueman-applet; then
+				 blueman-applet &
+		 fi
+		 if which nm-applet; then
+				 nm-applet &
+		 fi
+		 if which pasystray; then
+				 pasystray &
+		 fi
+	 #+END_SRC
+
+	 #+BEGIN_SRC bash :tangle ~/.xsession
+		 # Start Emacs
+		 exec emacs --debug-init -mm
+	 #+END_SRC
