@@ -1,0 +1,39 @@
+* Tasks
+** TODO Explore how to get 24-bit color support. :ATTACH:
+   :PROPERTIES:
+   :Attachments: 24-bit-color.sh
+   :ID:       4331EF38-5277-4753-A352-2E7B5C2E5472
+   :END:
+
+   We need 24-bit color support in xterm, st (suckless), screen and
+   emacs in the terminal.
+
+   Emacs documentation mentions the following to get 24-bit color
+   support:
+
+   #+BEGIN_EXAMPLE
+     $ cat terminfo-24bit.src
+
+     # Use colon separators.
+     xterm-24bit|xterm with 24-bit direct color mode,
+       use=xterm-256color,
+       setb24=\E[48:2:%p1%{65536}%/%d:%p1%{256}%/%{255}%&%d:%p1%{255}%&%dm,
+       setf24=\E[38:2:%p1%{65536}%/%d:%p1%{256}%/%{255}%&%d:%p1%{255}%&%dm,
+     # Use semicolon separators.
+     xterm-24bits|xterm with 24-bit direct color mode,
+       use=xterm-256color,
+       setb24=\E[48;2;%p1%{65536}%/%d;%p1%{256}%/%{255}%&%d;%p1%{255}%&%dm,
+       setf24=\E[38;2;%p1%{65536}%/%d;%p1%{256}%/%{255}%&%d;%p1%{255}%&%dm,
+
+     $ tic -x -o ~/.terminfo terminfo-24bit.src
+
+     $ TERM=xterm-24bit emacs -nw
+   #+END_EXAMPLE
+
+   Also, running the attached shell script should display 24-bit
+   colors if the backing terminal supports 24-bit colors.
+
+   Also, emacs command =list-colors-display= should display all colors
+   supported by emacs-in-terminal when it is properly configured.
+
+   [[file:~/org/config.org::*Emacs][Emacs]]
