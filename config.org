@@ -519,8 +519,12 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    (add-to-list 'my-frame-font-list "Ubuntu Mono-16:hintstyle=hintslight:rgba=rgb" t)
    (add-to-list 'my-frame-font-list "Ubuntu Mono-18:hintstyle=hintslight:rgba=rgb" t)
    (add-to-list 'my-frame-font-list "Ubuntu Mono-20:hintstyle=hintslight:rgba=rgb" t)
+   (add-to-list 'my-frame-font-list "Ubuntu Mono-22:hintstyle=hintslight:rgba=rgb" t)
+   (add-to-list 'my-frame-font-list "Ubuntu Mono-24:hintstyle=hintslight:rgba=rgb" t)
+   (add-to-list 'my-frame-font-list "Ubuntu Mono-26:hintstyle=hintslight:rgba=rgb" t)
+   (add-to-list 'my-frame-font-list "Ubuntu Mono-28:hintstyle=hintslight:rgba=rgb" t)
 
-   (my-frame-font-rotate)
+   (set-face-font 'default "Ubuntu Mono-12:hintstyle=hintslight:rgba=rgb")
 	 #+END_SRC
 
 ** Magit
