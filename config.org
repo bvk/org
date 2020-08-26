@@ -72,7 +72,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 
 ** ~/.gnupg
 
-	 #+BEGIN_SRC text :mkdirp yes :tangle ~/.gnupg-test/gpg-agent.conf
+	 #+BEGIN_SRC text :mkdirp yes :tangle ~/.gnupg/gpg-agent.conf
    enable-ssh-support
 	 #+END_SRC
 
