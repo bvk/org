@@ -645,6 +645,19 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    (when (require 'go-guru nil 'noerror)
      (add-hook 'go-mode-hook #'go-guru-hl-identifier-mode))
    #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+   (defvar my-go-coverage-out-relpath "coverage.out"
+     "Relative path to coverage.out file from the project root directory.")
+   (defun my-go-coverage-this-file ()
+     (interactive)
+     (let* ((dir (locate-dominating-file buffer-file-name my-go-coverage-out-relpath))
+            (coverage-out (concat dir my-go-coverage-out-relpath)))
+       (if (file-exists-p coverage-out)
+           (go-coverage coverage-out))))
+   (setq my-go-coverage-out-relpath "build/coverage.out")
+   #+END_SRC
+
 ** IRC
    #+BEGIN_SRC emacs-lisp
    (require 'rcirc)
