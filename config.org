@@ -779,7 +779,13 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
                       ":1"
                       "-no-host-grab"
                       "-resizeable"))
-     (defun my-exwm-lock-screen ()
+     (defun my-x11-take-screenshot ()
+       "Take screenshot into a png file."
+       (interactive)
+       (let* ((name (format-time-string "~/screenshot-%Y%m%d%H%M%S.png")))
+         (start-process "screenshot" "*Messages*"
+                        "bash" "-c" (concat "xwd -silent -root|convert xwd:- " name))))
+     (defun my-x11-lock-screen ()
        "Run slock to lock the screen."
        (interactive)
        (start-process "slock" "*Messages*" "slock"))
