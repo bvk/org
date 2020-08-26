@@ -355,14 +355,17 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	 useful and often conflict with normal work. Start
 
 	 #+BEGIN_SRC text :tangle ~/.screenrc
+   bind s
    bind ^s
+   bind q
    bind ^q
 	 #+END_SRC
 
-	 Start the first window at 1.
+	 Start the first window at 1 with an interactive-shell which includes the
+	 =~/.bashrc=.
 
 	 #+BEGIN_SRC text :tangle ~/.screenrc
-   screen -t shell 1 -/bin/bash
+   screen -t shell 1 /bin/bash
 	 #+END_SRC
 
 ** ~/.fonts                                                          :ATTACH:
