@@ -79,7 +79,6 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 ** ~/.emacs
 
 	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (package-initialize)
    (unless (boundp 'my-org-config-loading)
      (progn
        (setq my-org-config-loading t)
@@ -423,19 +422,31 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 
 ** Packages
    #+BEGIN_SRC emacs-lisp
-   (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
+   (require 'package)
+   (setq package-enable-at-starup nil)
+   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+   (package-initialize)
 
-   (package-install 'exwm)
+   (when (not package-archive-contents)
+     (package-refresh-contents))
+
+   (unless (package-installed-p 'exwm)
+     (package-install 'exwm))
    (require 'exwm)
 
-   (package-install 'magit)
+   (unless (package-installed-p 'magit)
+     (package-install 'magit))
    (require 'magit)
 
-   (package-install 'transient) ; magit-popup
+   (unless (package-installed-p 'transient)
+     (package-install 'transient))
    (require 'transient)
 
-   (package-install 'go-mode)
+   (unless (package-installed-p 'go-mode)
+     (package-install 'go-mode))
    (require 'go-mode)
+
+   (require 'view)
    #+END_SRC
 ** Customizations
 
