@@ -843,6 +843,13 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
     xterm*on5Clicks: line
     #+END_SRC
 
+*** URxvt
+
+    #+BEGIN_SRC text :tangle ~/.Xresources
+    URxvt.internalBorder:  0
+    URxvt.scrollBar: False
+    #+END_SRC
+
 *** XFT settings
 
     #+BEGIN_SRC text :tangle ~/.Xresources
