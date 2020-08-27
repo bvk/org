@@ -76,22 +76,6 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    enable-ssh-support
 	 #+END_SRC
 
-** ~/.emacs
-
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (unless (boundp 'my-org-config-loading)
-     (progn
-       (setq my-org-config-loading t)
-       (when (require 'org nil 'noerror)
-         (message "loading config.org with org-bable-load-file")
-         (org-babel-load-file "~/org/config.org"))))
-	 #+END_SRC
-
-	 Above block configures ~/.emacs file to load all emacs-lisp codeblocks in
-	 this file using org-babel-load-file -- except for the above block which is
-	 already run from the ~/.emacs file.
-
-*** TODO Why not we just create ~/.emacs file like all other dot-files?
 ** ~/.bashrc
 
 	 Copy the default Debian .bashrc content first and then override it with our
@@ -382,7 +366,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	 org-publish-project-alist with config-fonts for this task. When this project
 	 is published it will perform the necessary copying.
 
-	 #+BEGIN_SRC emacs-lisp
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (when (require 'ox-publish nil 'noerror)
      (add-to-list 'org-publish-project-alist
                   '("config-fonts"
@@ -397,9 +381,18 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	 ~/.fonts directory.
 
 * Emacs
+** Load customizations
+
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
+   ;; save customizations in a separate file
+   (setq custom-file "~/.emacs-custom.el")
+   (when (file-exists-p custom-file)
+     (load custom-file))
+	 #+END_SRC
+
 ** Personal Information
 
-	 #+BEGIN_SRC emacs-lisp
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (setq user-full-name "BVK Chaitanya")
    (setq user-mail-address "bvkchaitanya@gmail.com")
 	 #+END_SRC
@@ -408,13 +401,13 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 
 	 We could get rid of this with attachments.
 
-	 #+BEGIN_SRC emacs-lisp
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (when (file-exists-p "~/config/emacs/emacs.d")
      (add-to-list 'load-path "~/config/emacs/emacs.d"))
 	 #+END_SRC
 
 
-	 #+BEGIN_SRC emacs-lisp
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (setenv "PATH"
            (concat (getenv "HOME") "/bin" ":"
                    (getenv "HOME") "/go/bin" ":"
@@ -424,7 +417,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	 #+END_SRC
 
 ** Packages
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (require 'package)
    (setq package-enable-at-starup nil)
    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
@@ -453,21 +446,22 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    #+END_SRC
 ** Customizations
 
-	 #+BEGIN_SRC emacs-lisp
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (setq-default tab-width 2)
    (setq-default indent-tabs-mode nil)
 	 #+END_SRC
 
-	 #+BEGIN_SRC emacs-lisp
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (setq visible-bell t)
    (setq show-trailing-whitespace t)
    (setq split-height-threshold nil)             ; Disable vertical window splitting
    (setq display-time-day-and-date t)
-                                           ; Merge system's and Emacs' clipboard.
+   ;; Merge system's and Emacs' clipboard.
    (setq select-enable-clipboard t)
+   (defalias 'yes-or-no-p 'y-or-n-p)
 	 #+END_SRC
 
-	 #+BEGIN_SRC emacs-lisp
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (ido-mode t)
    (show-paren-mode 1)
    (menu-bar-mode 0)
@@ -483,17 +477,17 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
      (tool-bar-mode 0))
 	 #+END_SRC
 
-	 #+BEGIN_SRC emacs-lisp
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (add-to-list 'default-frame-alist '(right-fringe . 0))
    (add-to-list 'default-frame-alist '(cursor-color . "green"))
 	 #+END_SRC
 
-	 #+BEGIN_SRC emacs-lisp
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (add-hook 'before-save-hook 'delete-trailing-whitespace)
 	 #+END_SRC
 
 ** Fonts
-	 #+BEGIN_SRC emacs-lisp
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (defvar my-frame-font-list nil
      "List of font names for use with the my-frame-font-rotate
      function")
@@ -543,7 +537,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 
 ** Magit
 ** Orgmode
-	 #+BEGIN_SRC emacs-lisp
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (setq org-directory (expand-file-name "~/org"))
    ;; TAB key in source blocks indents as per the source block major mode.
    (setq org-src-preserve-indentation nil)
@@ -561,7 +555,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
             "* %?\nEntered on %U\n  %i\n  %a")))
 	 #+END_SRC
 ** Exwm
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (require 'exwm)
    (exwm-enable)
 
@@ -605,12 +599,12 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
                     ([?\C-d] . delete))))))
    #+END_SRC
 ** Buffers
-	 #+BEGIN_SRC emacs-lisp
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (when (require 'uniquify nil 'noerror)
      (setq uniquify-buffer-name-style 'forward))
 	 #+END_SRC
 ** Desktop Mode
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (require 'desktop)
    (setq desktop-save 1
          desktop-load-locked-desktop t
@@ -621,7 +615,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    (desktop-save-mode 1)
    #+END_SRC
 ** Column Marker Mode
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (when (require 'column-marker nil 'noerror)
      (progn
        (add-hook 'protobuf-mode-hook (lambda() (column-marker-1 80)))
@@ -629,13 +623,13 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
        (add-hook 'c++-mode-hook (lambda() (column-marker-1 80)))))
    #+END_SRC
 ** Protobuf Mode
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (when (require 'protobuf-mode nil 'noerror)
      (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
      (add-hook 'protobuf-mode-hook (lambda() (column-marker-1 80))))
    #+END_SRC
 ** Golang Mode
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (setq gofmt-command "goimports")
    (setq godoc-command "go doc -all")
 
@@ -645,22 +639,22 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 
 	 Disable whitespace mode cause gofmt takes care of proper formatting.
 
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (when (require 'whitespace nil 'noerror)
      (add-hook 'go-mode-hook (lambda() (whitespace-mode -1))))
    #+END_SRC
 
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (when (require 'column-marker nil 'noerror)
      (add-hook 'go-mode-hook (lambda() (column-marker-1 80))))
    #+END_SRC
 
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (when (require 'go-guru nil 'noerror)
      (add-hook 'go-mode-hook #'go-guru-hl-identifier-mode))
    #+END_SRC
 
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (defvar my-go-coverage-out-relpath "coverage.out"
      "Relative path to coverage.out file from the project root directory.")
    (defun my-go-coverage-this-file ()
@@ -673,7 +667,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    #+END_SRC
 
 ** IRC
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (require 'rcirc)
 
    ;; Do not display JOIN, QUIT, etc. messages
@@ -694,7 +688,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	  that we can use it with exwm, magit, org-capture, org-agenda, etc. commands
 	  that do not have default keybindings.
 
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
     (global-unset-key (kbd "C-z"))
     #+END_SRC
 
@@ -702,19 +696,19 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	  user. So, we should map all keybindings in that range here, so that we can
 	  be sure there aren't any conflicts.
 
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
     ;;(exwm-input-set-key (kbd "C-c o") #'exwm-workspace-switch)
     #+END_SRC
 
 *** Potentially conflicting keybindings
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
     (global-set-key (kbd "<C-left>") 'windmove-left)
     (global-set-key (kbd "<C-right>") 'windmove-right)
     (exwm-input-set-key (kbd "<C-left>") (lambda() (interactive) (windmove-left)))
     (exwm-input-set-key (kbd "<C-right>") (lambda() (interactive) (windmove-right)))
     #+END_SRC
 ** Gtags
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (when (require 'gtags nil 'noerror)
      nil)
    #+END_SRC
@@ -725,13 +719,13 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	 config file. As we migrate each config item, we shall add it in here and
 	 remove it from the existing config.
 
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    ;;(load-file "~/config/emacs/emacs.el")
    #+END_SRC
 
 ** Experiments
 *** Transient command example with flags and arguments
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
     (defun my-transient-test (&optional args)
       (interactive
        (list (transient-args 'my-transient)))
@@ -756,7 +750,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
      Following block saves and restores the window configuration for the
      orgmode "C-c '" keybinding in the source codeblocks.
 
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
      (defvar my/org-src-block-tmp-window-configuration nil)
 
      (defun my/org-edit-special (&optional arg)
@@ -773,7 +767,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
           (advice-add 'org-edit-src-exit :after 'my/org-edit-src-exit)))
      #+END_SRC
 
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
      (defun my-org-capture-note ()
        "Open org-capture for a note."
        (interactive)
@@ -818,7 +812,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
        (start-process "slock" "*Messages*" "slock"))
      #+END_SRC
 
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
      (define-transient-command my-keybindings-transient()
        "Launch menu with custom keybindings."
        ["Operations"
@@ -852,7 +846,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
      window manager nested in the Xephr sessions. Users can switch between
      line-mode and char-mode by toggling the mode in the mode-line.
 
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
      ;; remove C-j from all known modes.
      (define-key lisp-interaction-mode-map (kbd "C-j") nil)
      (define-key org-mode-map (kbd "C-j") nil)
