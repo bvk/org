@@ -73,6 +73,9 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 ** ~/.gnupg
 
 	 #+BEGIN_SRC text :mkdirp yes :tangle ~/.gnupg/gpg-agent.conf
+   default-cache-ttl 120
+   max-cache-ttl 600
+
    enable-ssh-support
 	 #+END_SRC
 
