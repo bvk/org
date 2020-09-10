@@ -46,9 +46,8 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 
   apt-get install -y xserver-xorg
   apt-get install -y xdg-utils
-  apt-get install -y xterm
-  apt-get install -y rxvt-unicode
-  apt-get install -y suckless-tool
+  apt-get install -y stterm
+  apt-get install -y stterm suckless-tools
 
   apt-get install -y sawfish
   apt-get install -y sawfish-themes
@@ -584,13 +583,12 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
                (exwm-workspace-rename-buffer exwm-class-name)))
 
    ;; Enable emacs keybindings in selected apps based on their window class name.
-   (setq my-simulation-key-window-classes '("Google-chrome" "Firefox" "XTerm"))
+   (setq my-simulation-key-window-classes '("Google-chrome" "Firefox"))
    (add-hook 'exwm-manage-finish-hook
              (lambda ()
                (when (and exwm-class-name (member exwm-class-name my-simulation-key-window-classes))
                  (exwm-input-set-local-simulation-keys
                   '(([?\C-c ?\C-c] . ?\C-c)
-                    ([?\C-c ?\C-j] . ?\C-j)
                     ([?\C-b] . left)
                     ([?\C-f] . right)
                     ([?\C-p] . up)
@@ -703,10 +701,15 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
     ;;(exwm-input-set-key (kbd "C-c o") #'exwm-workspace-switch)
     #+END_SRC
 
-*** Potentially conflicting keybindings
+*** Window Movement
     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
     (global-set-key (kbd "<C-left>") 'windmove-left)
     (global-set-key (kbd "<C-right>") 'windmove-right)
+    ;; Force same effect in ansi-term windows.
+    (require 'term)
+    (define-key term-raw-map (kbd "<C-left>") 'windmove-left)
+    (define-key term-raw-map (kbd "<C-right>") 'windmove-right)
+    ;; Force
     (exwm-input-set-key (kbd "<C-left>") (lambda() (interactive) (windmove-left)))
     (exwm-input-set-key (kbd "<C-right>") (lambda() (interactive) (windmove-right)))
     #+END_SRC
@@ -747,28 +750,13 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
        ("d" "Action d" my-transient-test)])
     (setq transient-display-buffer-action '(display-buffer-below-selected))
     #+END_SRC
+
 *** Transient based Keybindings
+
+    We use C-j keybinding for the transient popup window. I don't normally use
+    this key frequently.
+
 **** TODO Xephyr script must be tracked as an attachment
-
-     Following block saves and restores the window configuration for the
-     orgmode "C-c '" keybinding in the source codeblocks.
-
-     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-     (defvar my/org-src-block-tmp-window-configuration nil)
-
-     (defun my/org-edit-special (&optional arg)
-       "Save current window configuration before a org-edit buffer is open."
-       (setq my/org-src-block-tmp-window-configuration (current-window-configuration)))
-
-     (defun my/org-edit-src-exit ()
-       "Restore the window configuration that was saved before org-edit-special was called."
-       (set-window-configuration my/org-src-block-tmp-window-configuration))
-
-     (eval-after-load "org"
-       `(progn
-          (advice-add 'org-edit-special :before 'my/org-edit-special)
-          (advice-add 'org-edit-src-exit :after 'my/org-edit-src-exit)))
-     #+END_SRC
 
      #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
      (defun my-org-capture-note ()
@@ -779,21 +767,19 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
        "Open org-capture for a task."
        (interactive)
        (org-capture nil "t"))
-     (defun my-exwm-internet-browser ()
+     (defun my-x11-internet-browser ()
        "Open internet browser program."
        (interactive)
        (start-process "internet-browser" "*internet-browser*" "google-chrome"))
-     (defun my-relay-control-z () ;; FIXME This doesn't pass C-z to screen running in the xterm.
-       "Relay C-z character"
+     (defun my-x11-open-terminal ()
+       "Open new X11 terminal program."
        (interactive)
-       (exwm-input-send-simulation-key 1))
-     (defun my-exwm-open-terminal ()
-       "Open new xterm program."
-       (interactive)
-       (start-process "xterm" "*Messages*" "xterm"
-                      "-fa" (my-frame-font)
-                      "-e" "bash"))
-     (defun my-exwm-open-xephyr () ;; FIXME: Attache the sawfish startup script.
+       (if (get-buffer "st-256color")
+           (switch-to-buffer "st-256color")
+         (start-process "terminal" "*Messages*" "st"
+                        "-f" (my-frame-font)
+                        "-e" "bash")))
+     (defun my-x11-open-xephyr () ;; FIXME: Attache the sawfish startup script.
        "Open Xephyr window with sawfish."
        (interactive)
        (start-process "Xephyr" "*Messages*"
@@ -827,21 +813,23 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
          ("K" "Kill Emacs" save-buffers-kill-emacs)]
 
         ["External Programs"
-         ("t" "Open Terminal" my-exwm-open-terminal)
-         ("i" "Internet Browser" my-exwm-internet-browser)
-         ("X" "Open Xephr Environment" my-exwm-open-xephyr)
-         ("L" "Lock Screen" my-exwm-lock-screen)]
+         ("t" "Open Terminal" my-x11-open-terminal)
+         ("i" "Internet Browser" my-x11-internet-browser)
+         ("S" "Take Screenshot" my-x11-take-screenshot)
+         ("X" "Open Xephr Environment" my-x11-open-xephyr)
+         ("L" "Lock Screen" my-x11-lock-screen)]
 
         ["Orgmode Operations"
          ("A" "Show Agenda" org-agenda)
          ("N" "Capture Note" my-org-capture-note)
          ("T" "Capture Note" my-org-capture-task)]])
 
+     ;; transient popup buffer is displayed at the bottom of current window.
      (setq transient-display-buffer-action '(display-buffer-below-selected))
-     #+END_SRC
 
-     We assign one of the less useful emacs keybinding "C-j" to the transient
-     command.
+     ;; transient popup buffer is displayed after 5 seconds.
+     (setq transient-show-popup 5)
+     #+END_SRC
 
      In the EXWM mode, we assign the same "C-j" keybinding for the transient
      command, but only for the line-mode. This enables char-mode EXWM
@@ -850,13 +838,49 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
      line-mode and char-mode by toggling the mode in the mode-line.
 
      #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-     ;; remove C-j from all known modes.
-     (define-key lisp-interaction-mode-map (kbd "C-j") nil)
-     (define-key org-mode-map (kbd "C-j") nil)
+     ;; remove C-j from all known modes and assign it to the transient popup.
+     (define-key org-mode-map (kbd "C-j") #'my-keybindings-transient)
+     (define-key term-raw-map (kbd "C-j") #'my-keybindings-transient)
+     (define-key exwm-mode-map (kbd "C-j") #'my-keybindings-transient)
+     (define-key view-mode-map (kbd "C-j") #'my-keybindings-transient)
+     (define-key magit-mode-map (kbd "C-j") #'my-keybindings-transient)
+     (define-key magit-diff-mode-map (kbd "C-j") #'my-keybindings-transient)
+     (define-key magit-file-section-map (kbd "C-j") #'my-keybindings-transient)
+     (define-key lisp-interaction-mode-map (kbd "C-j") #'my-keybindings-transient)
 
-     ;; set C-j to run our transient command.
      (global-set-key (kbd "C-j") #'my-keybindings-transient)
-     (define-key exwm-mode-map (kbd "C-j") (lambda() (interactive) (my-keybindings-transient)))
+     #+END_SRC
+
+** Gtags
+
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
+   (when (require 'gtags nil 'noerror)
+     nil)
+   #+END_SRC
+
+** TODO Directory Locals
+
+** Experiments
+*** Window Configuration Fixes
+
+     Following block saves and restores the window configuration for the
+     orgmode "C-c '" keybinding in the source codeblocks.
+
+     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
+     (defvar my/org-src-block-tmp-window-configuration nil)
+
+     (defun my/org-edit-special (&optional arg)
+       "Save current window configuration before a org-edit buffer is open."
+       (setq my/org-src-block-tmp-window-configuration (current-window-configuration)))
+
+     (defun my/org-edit-src-exit ()
+       "Restore the window configuration that was saved before org-edit-special was called."
+       (set-window-configuration my/org-src-block-tmp-window-configuration))
+
+     (eval-after-load "org"
+       `(progn
+          (advice-add 'org-edit-special :before 'my/org-edit-special)
+          (advice-add 'org-edit-src-exit :after 'my/org-edit-src-exit)))
      #+END_SRC
 
 * X11 Setup
