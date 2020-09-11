@@ -351,7 +351,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	 =~/.bashrc=.
 
 	 #+BEGIN_SRC text :tangle ~/.screenrc
-   screen -t shell 1 /bin/bash
+   screen -T xterm-256color -t shell 1 /bin/bash
 	 #+END_SRC
 
 ** ~/.fonts                                                          :ATTACH:
