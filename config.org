@@ -392,6 +392,11 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
      (load custom-file))
 	 #+END_SRC
 
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
+   ;; open the default org-mode file on startup.
+   (setq initial-buffer-choice t)
+   #+END_SRC
+
 ** Personal Information
 
 	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
