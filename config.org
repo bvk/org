@@ -444,6 +444,10 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
      (package-install 'go-mode))
    (require 'go-mode)
 
+   (unless (package-installed-p 'bazel-mode)
+     (package-install 'bazel-mode))
+   (require 'bazel-mode)
+
    (require 'view)
    #+END_SRC
 ** Customizations
