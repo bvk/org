@@ -813,6 +813,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
      #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
      (define-transient-command my-keybindings-transient()
        "Launch menu with custom keybindings."
+       :transient-non-suffix 'transient--do-quit-one
        ["Operations"
         ["Emacs Operations"
          ("c" "Compile" compile)
