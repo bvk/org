@@ -467,8 +467,10 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    (setq show-trailing-whitespace t)
    (setq split-height-threshold nil)             ; Disable vertical window splitting
    (setq display-time-day-and-date t)
-   ;; Merge system's and Emacs' clipboard.
+   ;; Merge system's and Emacs' clipboards.
+   (setq select-enable-primary t)
    (setq select-enable-clipboard t)
+   (global-set-key (kbd "<mouse-2>") 'clipboard-yank)
    (defalias 'yes-or-no-p 'y-or-n-p)
 	 #+END_SRC
 
@@ -898,9 +900,12 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 *** XTerm
 
     #+BEGIN_SRC text :tangle ~/.Xresources
+    selectToClipboard: true
+    #+END_SRC
+
+    #+BEGIN_SRC text :tangle ~/.Xresources
     xterm*metaSendsEscape: true
     xterm*allowSendEvents: true
-    xterm*selectToClipboard: false
     xterm*on2Clicks: regex [^/@ \n]+
     xterm*on3Clicks: regex [^ \n]+
     xterm*on4Clicks: regex [^#$]+
