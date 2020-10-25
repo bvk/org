@@ -1029,6 +1029,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
     exec emacs --debug-init -mm
     #+END_SRC
 
+* Footnotes
 * COMMENT Local variables [must be the last block]
 Configure a buffer-local after-save-hook to tangle the codeblocks when this file
 is saved.
