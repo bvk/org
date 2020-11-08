@@ -8,32 +8,7 @@ to manually setup the symlinks to their respective dot files.
 
 See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-simultaneously-in-org-mode][How to Publish using org-mode]]
 
-* Environment
-
-	Prefix $HOME/bin and $HOME/go/bin to PATH so that I can override the tools
-	with custom versions. Also, the $HOME/bin directory should only have symlinks
-	so that proper version can be selected. For example, when multiple go
-	compiler versions (go1.13, go1.15, etc.), the $HOME/bin/go symlink determines
-	which one to use by default.
-
-	#+BEGIN_SRC bash :tangle ~/.environment
-  export PATH=$HOME/bin:$HOME/go/bin:$PATH
-	#+END_SRC
-
-	Almost all machines have enough disk space, so there is no need to lose
-	command history anymore. Keep the in-memory command history limited, but
-	history file size should be practically unlimited. Also make the shell append
-	to the history file after every command, so that history file accumulates
-	from multiple open shells simultaneously.
-
-	#+BEGIN_SRC bash :tangle ~/.environment
-  export HISTSIZE=1000
-  export HISTFILESIZE=10000000
-  export HISTCONTROL=ignorespace
-  export PROMPT_COMMAND='history -a'
-  #+END_SRC
-
-* OS Packages
+* Packages
 
 	Perhaps, we should split these commands their respective config file
 	sections.
@@ -70,7 +45,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	with org-babel-tangle target, so when users run org-babel-tangle command it
 	will overwrite the existing dot files.
 
-** ~/.gnupg
+** =~/.gnupg=
 
 	 #+BEGIN_SRC text :mkdirp yes :tangle ~/.gnupg/gpg-agent.conf
    default-cache-ttl 120
@@ -90,11 +65,6 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
        source /etc/skel/.bashrc
    fi
 	 #+END_SRC
-
-	 Override it with our environement. We use ~/.environement file for our
-	 customizations, so that (1) we keep ~/.bashrc as pristine as possible for
-	 system upgrades and (2) our customizations are easily accessible and
-	 tracked.
 
 *** Override system binaries with user binaries
 
@@ -187,7 +157,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
     screen -t shell 1 /bin/bash
 	  #+END_SRC
 
-** ~/.fonts                                                          :ATTACH:
+** =~/.fonts= directory                                              :ATTACH:
 	 :PROPERTIES:
 	 :ID:       d89df2d5-632b-41d8-b6b9-cc1107599d9e
 	 :DIR:      ~/org/fonts
@@ -729,7 +699,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
      #+END_SRC
 
 * X11 Setup
-** ~/.Xresources
+** =~/.Xresources=
 *** XTerm
 
     #+BEGIN_SRC text :tangle ~/.Xresources
@@ -825,41 +795,42 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
     ,*color15:               S_base3
     #+END_SRC
 
-** ~/.xsession
-*** Use gpg-agent with ssh-agent capability.
+** =~/.xsession=
 
-	  Run an ssh-agent instance for the session.
+	 Run an ssh-agent instance for the session.
 
-    #+BEGIN_SRC bash :tangle ~/.xsession
-    #!/bin/bash
-    source $HOME/.environment
-    #+END_SRC
+   #+BEGIN_SRC bash :tangle ~/.xsession
+   #!/bin/bash
+   source $HOME/.bashrc
+   #+END_SRC
 
-    #+BEGIN_SRC bash :tangle ~/.xsession
-    gpg-agent
-    #+END_SRC
+   Use gpg-agent with ssh-agent capability.
 
-    #+BEGIN_SRC bash :tangle ~/.xsession
-    xrdb -merge ~/.Xresources
-    #+END_SRC
+   #+BEGIN_SRC bash :tangle ~/.xsession
+   gpg-agent
+   #+END_SRC
 
-    #+BEGIN_SRC bash :tangle ~/.xsession
-    # Start few applets.
-    if which blueman-applet; then
-        blueman-applet &
-    fi
-    if which nm-applet; then
-        nm-applet &
-    fi
-    if which pasystray; then
-        pasystray &
-    fi
-    #+END_SRC
+   #+BEGIN_SRC bash :tangle ~/.xsession
+   xrdb -merge ~/.Xresources
+   #+END_SRC
 
-    #+BEGIN_SRC bash :tangle ~/.xsession
-    # Start Emacs
-    exec emacs --debug-init -mm
-    #+END_SRC
+   #+BEGIN_SRC bash :tangle ~/.xsession
+   # Start few applets.
+   if which blueman-applet; then
+       blueman-applet &
+   fi
+   if which nm-applet; then
+       nm-applet &
+   fi
+   if which pasystray; then
+       pasystray &
+   fi
+   #+END_SRC
+
+   #+BEGIN_SRC bash :tangle ~/.xsession
+   # Start Emacs
+   exec emacs --debug-init -mm
+   #+END_SRC
 
 * Footnotes
 * COMMENT Local variables [must be the last block]
