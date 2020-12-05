@@ -185,6 +185,30 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	 We can run emacs --eval '(org-publish "config-fonts")' to create the
 	 ~/.fonts directory.
 
+** =~/.ssh/config=
+
+   1. Milk server uses static ip.
+
+	 #+BEGIN_SRC text :mkdirp yes :tangle ~/.ssh/config
+   Host milk-home
+     HostName 192.168.0.10
+     User bvk
+	 #+END_SRC
+
+** =~/.ssh/authorized_keys=
+
+   1. Steam public key
+
+	 #+BEGIN_SRC text :mkdirp yes :tangle ~/.ssh/authorized_keys
+   ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCWTvx3XZFM9YVgxS+aDJ6gZBJR/BFec0/C8yYgBI+G0KMttHOxXuFJJ+UNtufcuPUAqe0vepDWh4bz4dimE4iDWnC5G0LJ71b8YVewtvEu5xSOmjRE38ozCfN0fwLsSvQqUaqlNexpiN+lcDL1UeKXFWzTMp8kE6WEnE7AXUk1Srl5eB0SaQz1ULp7alcq+6T+eySTEvRBzEzZQEK/ToWp8MnRjG09pitCGwnoa2OCDkNPhpUus7RlPhVlCBOjX/D74UcgVUG225sOMCsmqDK+5Y1XJgw3AHGL+9i31gc5U5FyewNHbV3LTmeOoGE2VjbfGDTsSP/i/T7F4LWLMhYL bvk@steam
+	 #+END_SRC
+
+   2. Milk public key
+
+	 #+BEGIN_SRC text :mkdirp yes :tangle ~/.ssh/authorized_keys
+   ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDJuIfcmsA+CQZn/gkva40Qbw9svQNd3v5m+fult60rmFRXO5bpgPX7fLACCguv6MSYPYFPl92oUjHgjhvuY/+ZJYsN3ukKrFLg+G+SK5i+TT9FjT4ytijxzcVPnQjzKd7B208+maRhKZlWRO2wBPckk/ToFiBZyhwpa1l842jWN+cmePXcLjzbVT6UH8ALc80JVT92DJvf2jsqIpY9aVNpaHUCtk9BN6Q6ZNmmEcDgro2qdXwF3tn2poLUkQ/eERudc9mzIjW73O08EWrCFBXUlPFqfxfMYKuLIKw9rF6qWKMui5+Ukv6Vr4/0FQiQ0JLPzrv1ZNiAT6/fAIHGrJMV bvk@milk
+	 #+END_SRC
+
 * Emacs
 ** Load customizations
 
@@ -567,8 +591,8 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 
 *** Transient based Keybindings
 
-    We use C-j keybinding for the transient popup window. I don't normally use
-    this key frequently.
+    We use C-j keybinding for the transient popup window. I never use this
+    keybinding anywhere.
 
 **** TODO Xephyr script must be tracked as an attachment
 
@@ -655,6 +679,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
      #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
      ;; remove C-j from all known modes and assign it to the transient popup.
      (define-key org-mode-map (kbd "C-j") #'my-keybindings-transient)
+     (define-key vterm-mode-map (kbd "C-j") #'my-keybindings-transient)
      (define-key term-raw-map (kbd "C-j") #'my-keybindings-transient)
      (define-key exwm-mode-map (kbd "C-j") #'my-keybindings-transient)
      (define-key view-mode-map (kbd "C-j") #'my-keybindings-transient)
