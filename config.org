@@ -83,7 +83,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 *** Configure huge command history
 
 	  #+BEGIN_SRC bash :tangle ~/.bashrc
-    export HISTSIZE=1000
+    export HISTSIZE=100000
     export HISTFILESIZE=10000000
     export PROMPT_COMMAND='history -a'
 	  #+END_SRC
