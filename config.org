@@ -280,6 +280,10 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
      (package-install 'bazel-mode))
    (require 'bazel-mode)
 
+   (unless (package-installed-p 'vterm)
+     (package-install 'vterm))
+   (require 'vterm)
+
    (require 'view)
    #+END_SRC
 ** Customizations
