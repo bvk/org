@@ -334,12 +334,12 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (defvar my-frame-font-list nil
      "List of font names for use with the my-frame-font-rotate
-     function")
+        function")
    (setq my-frame-font-index nil)
    (defun my-frame-font ()
      "Returns the current frame font from the
-   my-frame-font-list. Returns 6x13 if current frame font is not
-   activated from the my-frame-font-list."
+      my-frame-font-list. Returns 6x13 if current frame font is not
+      activated from the my-frame-font-list."
      (interactive)
      (if (eq (length my-frame-font-list) 0) "6x13"
        (let* ((num-font (length my-frame-font-list)))
@@ -350,10 +350,10 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 
    (defun my-frame-font-rotate ()
      "Update the frame font with next font name from the
-     my-frame-font-list. Current font index is tracked in
-     my-frame-font-index variable. If index is nil it will be
-     initialized to zero; otherwise it will be incremented by one
-     and may wrap around when reaches to end of the font list."
+        my-frame-font-list. Current font index is tracked in
+        my-frame-font-index variable. If index is nil it will be
+        initialized to zero; otherwise it will be incremented by one
+        and may wrap around when reaches to end of the font list."
      (interactive)
      (when (> (length my-frame-font-list) 0)
        (let* ((num-font (length my-frame-font-list))
@@ -376,7 +376,8 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    (add-to-list 'my-frame-font-list "Ubuntu Mono-26:hintstyle=hintslight:rgba=rgb" t)
    (add-to-list 'my-frame-font-list "Ubuntu Mono-28:hintstyle=hintslight:rgba=rgb" t)
 
-   (set-face-font 'default "Ubuntu Mono-12:hintstyle=hintslight:rgba=rgb")
+   (add-to-list 'default-frame-alist
+                '(font . "Ubuntu Mono-16:hintstyle=hintslight:rgba=rgb"))
 	 #+END_SRC
 
 ** Magit
