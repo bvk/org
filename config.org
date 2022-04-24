@@ -45,6 +45,13 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	with org-babel-tangle target, so when users run org-babel-tangle command it
 	will overwrite the existing dot files.
 
+** =~/.environment=
+
+    #+BEGIN_SRC text :tangle ~/.environment
+    HOSTNAME=$(hostname -s)
+    export HOSTNAME
+    #+END_SRC
+
 ** =~/.gnupg=
 
 	 #+BEGIN_SRC text :mkdirp yes :tangle ~/.gnupg/gpg-agent.conf
@@ -65,6 +72,15 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
        source /etc/skel/.bashrc
    fi
 	 #+END_SRC
+
+   #+BEGIN_SRC bash :tangle ~/.bashrc
+   if test -f $HOME/.environment; then
+       source $HOME/.environment
+   fi
+   if test -f $HOME/.environment-$HOSTNAME; then
+       source $HOME/.environment-$HOSTNAME
+   fi
+   #+END_SRC
 
 *** Override system binaries with user binaries
 
