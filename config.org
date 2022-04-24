@@ -886,6 +886,9 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 
    #+BEGIN_SRC bash :tangle ~/.xsession
    xrdb -merge ~/.Xresources
+   if test -f $HOME/.Xresources-$HOSTNAME; then
+     xrdb -merge $HOME/.Xresources-$HOSTNAME
+   fi
    #+END_SRC
 
    #+BEGIN_SRC bash :tangle ~/.xsession
