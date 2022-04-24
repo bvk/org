@@ -82,6 +82,23 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    fi
    #+END_SRC
 
+*** Aliases for bitcoin cash binaries
+
+    These values are only meant for the milk server where bitcoin data
+    directory really exists.
+
+   #+BEGIN_SRC bash :tangle ~/.bashrc
+   if test -d /localzpool/bch-bchn -a -d $HOME/tools/bitcoin-cash-node; then
+       alias bitcoind-bchn='$HOME/tools/bitcoin-cash-node/bin/bitcoind -datadir=/localzpool/bch-bchn'
+       alias bitcoin-cli-bchn='$HOME/tools/bitcoin-cash-node/bin/bitcoin-cli -datadir=/localzpool/bch-bchn'
+   fi
+
+   if test -d /localzpool/bch-abc -a -d $HOME/tools/bitcoin-abc; then
+       alias bitcoind-abc='$HOME/tools/bitcoin-abc/bin/bitcoind -datadir=/localzpool/bch-abc'
+       alias bitcoin-cli-abc='$HOME/tools/bitcoin-abc/bin/bitcoin-cli -datadir=/localzpool/bch-abc'
+   fi
+   #+END_SRC
+
 *** Override system binaries with user binaries
 
 	  #+BEGIN_SRC bash :tangle ~/.bashrc
