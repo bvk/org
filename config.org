@@ -750,6 +750,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
     #+BEGIN_SRC text :tangle ~/.Xresources
     URxvt.internalBorder:  0
     URxvt.scrollBar: False
+    URxvt.perl-ext-common: tabbed,font-size
     #+END_SRC
 
 *** XFT settings
