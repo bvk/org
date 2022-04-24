@@ -82,6 +82,16 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    fi
    #+END_SRC
 
+** =~/.bash_login=
+
+   Make the login shell also read ~/.bashrc file.
+
+   #+BEGIN_SRC bash :tangle ~/.bash_profile
+   if test -f $HOME/.bashrc; then
+       . $HOME/.bashrc
+   fi
+   #+END_SRC
+
 *** Aliases for bitcoin cash binaries
 
     These values are only meant for the milk server where bitcoin data
