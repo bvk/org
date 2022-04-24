@@ -766,7 +766,7 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 
 *** Solarized theme for Xterm.
 
-    #+BEGIN_SRC text :tangle ~/.Xresources
+    #+BEGIN_SRC text :notangle ~/.Xresources
     #define S_base03        #002b36
     #define S_base02        #073642
     #define S_base01        #586e75
