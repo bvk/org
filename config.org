@@ -59,6 +59,9 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    max-cache-ttl 600
 
    enable-ssh-support
+
+   allow-emacs-pinentry
+   allow-loopback-entry
 	 #+END_SRC
 
 ** =~/.bashrc=
@@ -306,6 +309,12 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    (when (not package-archive-contents)
      (package-refresh-contents))
 
+   (unless (package-installed-p 'pinentry)
+     (package-install 'pinentry))
+   (require 'pinentry)
+   (setenv "INSIDE_EMACS" (format "%s,comint" emacs-version))
+   (pinentry-start)
+
    (unless (package-installed-p 'exwm)
      (package-install 'exwm))
    (require 'exwm)
@@ -374,6 +383,13 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 
 	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (add-hook 'before-save-hook 'delete-trailing-whitespace)
+	 #+END_SRC
+
+	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
+   (require 'epa-file)
+   (epa-file-enable)
+   ;; Does this need (pinentry-start) from pinentry package?
+   (setq epg-pinentry-mode 'loopback)
 	 #+END_SRC
 
 ** Fonts
