@@ -897,7 +897,22 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    source $HOME/.bashrc
    #+END_SRC
 
-   Use gpg-agent with ssh-agent capability.
+   #+BEGIN_SRC bash :tangle ~/.xsession
+   # Enable/Disable DPMS (Energy Star) features.
+   xset -dpms
+
+   # Enable/Disable blank the video device.
+   # xset s noblank
+
+   # Enable/Disable the screensaver.
+   # xset s off
+
+   # Enable/Disable access control.
+   # xhost +SI:localuser:$USER
+   #+END_SRC
+
+   Use gpg-agent with ssh-agent capability. SSH capability is enabled in the
+   =~/.gnupg/gpg-agent.conf= file above.
 
    #+BEGIN_SRC bash :tangle ~/.xsession
    gpg-agent
@@ -911,21 +926,19 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    #+END_SRC
 
    #+BEGIN_SRC bash :tangle ~/.xsession
-   # Start few applets.
-   if which blueman-applet; then
-       blueman-applet &
-   fi
-   if which nm-applet; then
-       nm-applet &
-   fi
-   if which pasystray; then
-       pasystray &
+   if test -f $HOME/.xsession-$HOSTNAME; then
+     source $HOME/.xsession-$HOSTNAME
    fi
    #+END_SRC
 
    #+BEGIN_SRC bash :tangle ~/.xsession
    # Start Emacs
    exec emacs --debug-init -mm
+*** =~/.xsession-steam=
+
+   #+BEGIN_SRC bash :tangle ~/.xsession-steam
+   # Use custom DPI for the 4k, 24" monitor
+   xandr --dpi 184
    #+END_SRC
 
 * Footnotes
