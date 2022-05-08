@@ -289,8 +289,11 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
            (concat (getenv "HOME") "/bin" ":"
                    (getenv "HOME") "/go/bin" ":"
                    (getenv "PATH")))
-                                           ; Emacs uses exec-path instead of the PATH
+   ;; Emacs uses exec-path instead of the PATH
    (setq exec-path (split-string (getenv "PATH") ":"))
+
+   ;; Also, update the tramp-default-remote-path.
+   (setq tramp-default-remote-path "~/bin:~/go/bin:/bin:/usr/bin")
 	 #+END_SRC
 
 ** Packages
