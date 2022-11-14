@@ -272,6 +272,74 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
 	 #+END_SRC
 
 * Emacs
+** Email with Mu4e
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-email.el
+(if (file-exists-p "/usr/share/emacs/site-lisp/mu4e")
+    (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e"))
+
+(when (require 'mu4e nil 'noerror)
+  (require 'smtpmail)
+
+  ;; Allow for updating mail using 'U' in the main view.
+  (setq mu4e-get-mail-command "mbsync -a")
+  (setq mu4e-update-interval (* 10 60))
+  (setq mu4e-maildir "~/Mail")
+
+  ;; Display options
+  (setq mu4e-view-show-addresses 't)
+  (setq mu4e-attachment-dir "~/Mail/Downloads")
+
+  ;; Composing mail
+  (setq mu4e-compose-dont-reply-to-self t)
+  ;; Don't keep message buffers around
+  (setq message-kill-buffer-on-exit t)
+
+  ;; Use mu4e for sending e-mail
+  (setq mail-user-agent 'mu4e-user-agent)
+  (setq message-send-mail-function 'smtpmail-send-it)
+  (setq smtpmail-smtp-server "smtp.gmail.com")
+  (setq smtpmail-smtp-service 587)
+
+  ;; Make sure that moving a message (like to Trash) causes the
+  ;; message to get a new file name.  This helps to avoid the
+  ;; dreaded "UID is N beyond highest assigned" error.
+  ;; See this link for more info: https://stackoverflow.com/a/43461973
+  (setq mu4e-change-filenames-when-moving t)
+
+  ;; Set up contexts for email accounts
+  (setq mu4e-contexts
+        `(,(make-mu4e-context
+            :name "bvkchaitanya@gmail"
+            :match-func (lambda (msg)
+                          (when msg
+                            (string-prefix-p "/bvkchaitanya@gmail.com"
+                                             (mu4e-message-field msg :maildir))))
+            :vars '((user-mail-address . "bvkchaitanya@gmail.com")
+                    (mu4e-trash-folder . "/bvkchaitanya@gmail.com/Trash")
+                    (mu4e-drafts-folder . "/bvkchaitanya@gmail.com/Drafts")
+                    (mu4e-refile-folder . "/bvkchaitanya@gmail.com/Archive")
+                    (mu4e-sent-messages-behavior . 'delete)))
+          ,(make-mu4e-context
+            :name "bvk.other@gmail"
+            :match-func (lambda (msg)
+                          (when msg
+                            (string-prefix-p "/bvkother@gmail.com"
+                                             (mu4e-message-field msg :maildir))))
+            :vars '((mu4e-sent-messages-behavior . 'delete)
+                    (mu4e-trash-folder . "/bvkother@gmail.com/Trash")
+                    (mu4e-refile-folder . "/bvkother@gmail.com/Archive")))
+          ))
+  (setq mu4e-context-policy 'pick-first)
+
+  (add-to-list 'mu4e-bookmarks
+               (make-mu4e-bookmark
+                :name "All Inboxes"
+                :query "maildir:/bvkchaitanya@gmail.com/Inbox OR maildir:/bvkother@gmail.com/Inbox"
+                :key ?i))
+
+  ;; Start mu4e in the background so that it syncs mail periodically
+  (mu4e t))
+#+END_SRC
 ** Load customizations
 
 	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
@@ -408,6 +476,73 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    (setq epg-pinentry-mode 'loopback)
 	 #+END_SRC
 
+** Receive GMail over IMAP with =mbsync=
+   #+BEGIN_SRC conf :tangle ~/.mbsyncrc
+   IMAPAccount bvkchaitanya@gmail.com
+   Host imap.gmail.com
+   User bvkchaitanya@gmail.com
+   #PassCmd "gpg -q --for-your-eyes-only --no-tty -d ~/.authinfo.gpg | awk '/machine imap.gmail.com login bvkchaitanya@gmail.com/ {print $6}'"
+   PassCmd "eval echo `emacsclient -e '(auth-source-pick-first-password :host \"imap.gmail.com\" :user \"bvkchaitanya@gmail.com\")'`"
+   AuthMechs LOGIN
+   SSLType IMAPS
+   SSLVersions TLSv1.2
+   #CertificateFile /usr/local/etc/openssl@1.1/cert.pem
+
+   MaildirStore bvkchaitanya-gmail-local
+   Path ~/Mail/bvkchaitanya@gmail.com/
+   Inbox ~/Mail/bvkchaitanya@gmail.com/Inbox
+   SubFolders Verbatim
+
+   IMAPStore bvkchaitanya-gmail-remote
+   Account bvkchaitanya@gmail.com
+
+   Channel bvkchaitanya-gmail-inbox
+   Master :bvkchaitanya-gmail-remote:"INBOX"
+   Slave :bvkchaitanya-gmail-local:"INBOX"
+   CopyArrivalDate yes
+   Create Both
+   Expunge Both
+   SyncState *
+
+   Channel bvkchaitanya-gmail-trash
+   Master :bvkchaitanya-gmail-remote:"[Gmail]/Trash"
+   Slave :bvkchaitanya-gmail-local:"Trash"
+   CopyArrivalDate yes
+   Create Both
+   Expunge Both
+   SyncState *
+
+   Channel bvkchaitanya-gmail-spam
+   Master :bvkchaitanya-gmail-remote:"[Gmail]/Spam"
+   Slave :bvkchaitanya-gmail-local:"Spam"
+   CopyArrivalDate yes
+   Create Both
+   Expunge Both
+   SyncState *
+
+   Channel bvkchaitanya-gmail-all
+   Master :bvkchaitanya-gmail-remote:"[Gmail]/All Mail"
+   Slave :bvkchaitanya-gmail-local:"Archive"
+   CopyArrivalDate yes
+   Create Both
+   Expunge Both
+   SyncState *
+
+   Channel bvkchaitanya-gmail-drafts
+   Master :bvkchaitanya-gmail-remote:"[Gmail]/Drafts"
+   Slave :bvkchaitanya-gmail-local:"Drafts"
+   CopyArrivalDate yes
+   Create Both
+   Expunge Both
+   SyncState *
+
+   Group bvkchaitanya-gmail
+   Channel bvkchaitanya-gmail-inbox
+   Channel bvkchaitanya-gmail-trash
+   Channel bvkchaitanya-gmail-all
+   Channel bvkchaitanya-gmail-spam
+   Channel bvkchaitanya-gmail-drafts
+   #+END_SRC
 ** Fonts
 	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (defvar my-frame-font-list nil
