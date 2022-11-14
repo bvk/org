@@ -948,8 +948,10 @@ See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-sim
    #+END_SRC
 
    #+BEGIN_SRC bash :tangle ~/.xsession
-   # Start Emacs
-   exec emacs --debug-init -mm
+   # Start Sawfish
+   exec sawfish
+   #+END_SRC
+
 *** =~/.xsession-steam=
 
    #+BEGIN_SRC bash :tangle ~/.xsession-steam
