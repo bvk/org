@@ -377,6 +377,20 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 (setq tramp-default-remote-path "~/bin:~/go/bin:/bin:/usr/bin")
 #+END_SRC
 
+** GnuPG and Passwords config
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-gpg.el
+(unless (package-installed-p 'pinentry)
+  (package-install 'pinentry))
+(require 'pinentry)
+(setenv "INSIDE_EMACS" (format "%s,comint" emacs-version))
+(pinentry-start)
+
+(require 'epa-file)
+(epa-file-enable)
+;; Does this need (pinentry-start) from pinentry package?
+(setq epg-pinentry-mode 'loopback)
+#+END_SRC
+
 ** Email with Mu4e
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-email.el
 (if (file-exists-p "/usr/share/emacs/site-lisp/mu4e")
