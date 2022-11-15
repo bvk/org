@@ -298,6 +298,46 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 	 #+END_SRC
 
 * Emacs
+** Editing config
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-editing.el
+(setq-default tab-width 2)
+(setq-default indent-tabs-mode nil)
+(setq show-trailing-whitespace t)
+
+(setq select-enable-primary t)
+(setq select-enable-clipboard t)
+
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+(ido-mode t)
+(setq visible-bell t)
+
+(show-paren-mode 1)
+(column-number-mode 1)
+(blink-cursor-mode 0)
+(display-time-mode 1)
+
+(menu-bar-mode 0)
+(tooltip-mode nil)
+(add-to-list 'default-frame-alist '(right-fringe . 0))
+(add-to-list 'default-frame-alist '(cursor-color . "green"))
+
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;; emacs-nox has no scroll-bar-mode
+(when (functionp 'scroll-bar-mode)
+  (scroll-bar-mode 0))
+;; emacs-nox has no tool-bar-mode
+(when (functionp 'tool-bar-mode)
+  (tool-bar-mode 0))
+
+(when (require 'uniquify nil 'noerror)
+  (setq uniquify-buffer-name-style 'forward))
+
+(when (require 'org nil 'noerror)
+  (setq org-edit-src-content-indentation 0))
+#+END_SRC
+
 ** Email with Mu4e
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-email.el
 (if (file-exists-p "/usr/share/emacs/site-lisp/mu4e")
