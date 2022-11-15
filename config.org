@@ -471,6 +471,40 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
   ;; Start mu4e in the background so that it syncs mail periodically
   (mu4e t))
 #+END_SRC
+
+** OrgMode config
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-orgmode.el
+(unless (package-installed-p 'org)
+  (package-install 'org))
+(require 'org)
+
+(setq org-directory (expand-file-name "~/org"))
+;; TAB key in source blocks indents as per the source block major mode.
+(setq org-src-preserve-indentation nil)
+(setq org-edit-src-content-indentation 0)
+(setq org-src-tab-acts-natively t)
+;; org-agent will not change the window layout.
+(setq org-agenda-window-setup 'current-window)
+
+;; org-capture config.
+(setq org-default-notes-file (concat org-directory "/notes.org"))
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/org/tasks.org" "Tasks")
+         "* TODO %?\n  %i\n  %a")
+        ("n" "Note" entry (file+datetree "~/org/notes.org")
+         "* %?\nEntered on %U\n  %i\n  %a")))
+
+(defun my-org-capture-note ()
+  "Open org-capture for a note."
+  (interactive)
+  (org-capture nil "n"))
+(defun my-org-capture-task ()
+  "Open org-capture for a task."
+  (interactive)
+  (org-capture nil "t"))
+#+END_SRC
+
 ** Manage Git repos with Magit
 
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-magit.el
