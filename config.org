@@ -459,6 +459,35 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
   ;; Start mu4e in the background so that it syncs mail periodically
   (mu4e t))
 #+END_SRC
+** Golang config
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-golang.el
+(unless (package-installed-p 'go-mode)
+  (package-install 'go-mode))
+(require 'go-mode)
+
+;; this needs `go install golang.org/x/tools/cmd/guru@latest`
+(unless (package-installed-p 'go-guru)
+  (package-install 'go-guru))
+(require 'go-guru)
+
+(setq godoc-command "go doc -all")
+(if (executable-find "goimports")
+    (setq gofmt-command "goimports"))
+
+(defun my-go-mode-hook ()
+  (if (featurep 'whitespace) (whitespace-mode -1))
+  (if (featurep 'column-marker) (column-marker-1 80))
+  (local-set-key (kbd "M-.") 'godef-jump)
+  (local-set-key (kbd "M-,") 'pop-tag-mark)
+  (go-guru-hl-identifier-mode))
+(add-hook 'go-mode-hook 'my-go-mode-hook)
+
+(defun my-golang-find-go-module (dir)
+  (when-let ((root (locate-dominating-file dir "go.mod")))
+    (cons 'go-module root)))
+#+END_SRC
+
 ** Load customizations
 
 	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
