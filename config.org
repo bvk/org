@@ -101,6 +101,16 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
    fi
    #+END_SRC
 
+** =~/.bash_profile=
+
+   Make the login shell also read ~/.bashrc file.
+
+   #+BEGIN_SRC bash :tangle ~/.bash_profile
+   if test -f $HOME/.bashrc; then
+       . $HOME/.bashrc
+   fi
+   #+END_SRC
+
 ** =~/.bash_login=
 
    Make the login shell also read ~/.bashrc file.
