@@ -556,6 +556,109 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
     (cons 'go-module root)))
 #+END_SRC
 
+** Keybindings (should be last)
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-keybindings.el
+(global-unset-key (kbd "C-z"))
+
+;; Increase/decrease frame font size.
+(global-set-key (kbd "C-x C-=") 'my-font-increase)
+(global-set-key (kbd "C-x C--") 'my-font-decrease)
+
+(global-set-key (kbd "<C-left>") 'windmove-left)
+(global-set-key (kbd "<C-right>") 'windmove-right)
+;; Force same effect in ansi-term windows.
+(require 'term)
+(define-key term-raw-map (kbd "<C-left>") 'windmove-left)
+(define-key term-raw-map (kbd "<C-right>") 'windmove-right)
+
+;; Paste with mouse.
+(global-set-key (kbd "<mouse-2>") 'clipboard-yank)
+
+(defun my-x11-internet-browser ()
+  "Open internet browser program."
+  (interactive)
+  (start-process "internet-browser" "*internet-browser*" "google-chrome"))
+(defun my-x11-open-terminal ()
+  "Open new X11 terminal program."
+  (interactive)
+  (if (get-buffer "st-256color")
+      (switch-to-buffer "st-256color")
+    (start-process "terminal" "*Messages*" "st"
+                   "-f" (my-frame-font)
+                   "-e" "bash")))
+(defun my-x11-open-xephyr () ;; FIXME: Attache the sawfish startup script.
+  "Open Xephyr window with sawfish."
+  (interactive)
+  (start-process "Xephyr" "*Messages*"
+                 "xinit" "/home/bvk/config/xephyr/sawfish"
+                 "--"
+                 "/usr/bin/Xephyr"
+                 ":1"
+                 "-no-host-grab"
+                 "-resizeable"))
+(defun my-x11-take-screenshot ()
+  "Take screenshot into a png file."
+  (interactive)
+  (let* ((name (format-time-string "~/screenshot-%Y%m%d%H%M%S.png")))
+    (start-process "screenshot" "*Messages*"
+                   "bash" "-c" (concat "xwd -silent -root|convert xwd:- " name))))
+(defun my-x11-lock-screen ()
+  "Run slock to lock the screen."
+  (interactive)
+  (start-process "slock" "*Messages*" "slock"))
+;; END FIXME
+
+(unless (package-installed-p 'transient)
+  (package-install 'transient))
+(require 'transient)
+
+(define-transient-command my-keybindings-transient()
+  "Launch menu with custom keybindings."
+  :transient-non-suffix 'transient--do-quit-one
+  ["Operations"
+   ["Emacs Operations"
+    ("c" "Compile" compile)
+    ("g" "Magit Status" magit-status)
+    ("o" "Switch EXWM Workspace" exwm-workspace-switch)
+    ("K" "Kill Emacs" save-buffers-kill-emacs)]
+
+   ["External Programs"
+    ("t" "Open Terminal" my-x11-open-terminal)
+    ("i" "Internet Browser" my-x11-internet-browser)
+    ("S" "Take Screenshot" my-x11-take-screenshot)
+    ("X" "Open Xephr Environment" my-x11-open-xephyr)
+    ("L" "Lock Screen" my-x11-lock-screen)]
+
+   ["Orgmode Operations"
+    ("A" "Show Agenda" org-agenda)
+    ("N" "Capture Note" my-org-capture-note)
+    ("T" "Capture Note" my-org-capture-task)]])
+
+;; transient popup buffer is displayed at the bottom of current window.
+(setq transient-display-buffer-action '(display-buffer-below-selected))
+
+;; transient popup buffer is displayed after 5 seconds.
+(setq transient-show-popup 5)
+
+;; remove C-j from all known modes and assign it to the transient popup.
+
+(when (require 'term nil 'noerror)
+ (define-key term-raw-map (kbd "C-j") #'my-keybindings-transient))
+
+(define-key org-mode-map (kbd "C-j") #'my-keybindings-transient)
+;(define-key vterm-mode-map (kbd "C-j") #'my-keybindings-transient)
+;(define-key exwm-mode-map (kbd "C-j") #'my-keybindings-transient)
+;(define-key view-mode-map (kbd "C-j") #'my-keybindings-transient)
+(define-key magit-mode-map (kbd "C-j") #'my-keybindings-transient)
+(define-key magit-diff-mode-map (kbd "C-j") #'my-keybindings-transient)
+(define-key magit-file-section-map (kbd "C-j") #'my-keybindings-transient)
+
+;; The following removes C-j from scratch buffer.
+(define-key lisp-interaction-mode-map (kbd "C-j") #'my-keybindings-transient)
+
+(global-set-key (kbd "C-j") #'my-keybindings-transient)
+#+END_SRC
+
 ** Load customizations
 
 	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
