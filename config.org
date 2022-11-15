@@ -391,6 +391,18 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 (setq epg-pinentry-mode 'loopback)
 #+END_SRC
 
+** Emacs Package Repositories
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-emacs-repos.el
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(setq package-enable-at-starup nil)
+(package-initialize)
+
+(when (not package-archive-contents)
+  (package-refresh-contents))
+#+END_SRC
+
 ** Email with Mu4e
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-email.el
 (if (file-exists-p "/usr/share/emacs/site-lisp/mu4e")
