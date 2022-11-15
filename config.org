@@ -471,6 +471,14 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
   ;; Start mu4e in the background so that it syncs mail periodically
   (mu4e t))
 #+END_SRC
+** Manage Git repos with Magit
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-magit.el
+(unless (package-installed-p 'magit)
+  (package-install 'magit))
+(require 'magit)
+#+END_SRC
+
 ** Golang config
 
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-golang.el
