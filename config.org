@@ -499,12 +499,16 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 (require 'magit)
 #+END_SRC
 
-** C/C++ config
-#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-cc.el
+** Use GNU Global for TAGS
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-gtags.el
 (unless (package-installed-p 'ggtags)
   (package-install 'ggtags))
 (require 'ggtags)
+#+END_SRC
 
+** C/C++ config
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-cc.el
 (defun my-cc-mode-hook ()
   (if (featurep 'whitespace) (whitespace-mode))
   (if (featurep 'column-marker) (column-marker-1 80))
