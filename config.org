@@ -152,20 +152,6 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
     export PATH=$HOME/bin:$HOME/go/bin:$PATH
     #+END_SRC
 
-*** Configure huge command history
-
-	  #+BEGIN_SRC bash :tangle ~/.bashrc
-    export HISTSIZE=100000
-    export HISTFILESIZE=10000000
-    export PROMPT_COMMAND='history -a'
-	  #+END_SRC
-
-*** Skip space prefixed commands from history
-
-	  #+BEGIN_SRC bash :tangle ~/.bashrc
-    export HISTCONTROL=ignorespace
-	  #+END_SRC
-
 ** =~/.screenrc=
 
 	 Include the default screen configuration from /etc/screenrc file and override
