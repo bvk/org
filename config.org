@@ -403,6 +403,13 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 
 (when (not package-archive-contents)
   (package-refresh-contents))
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(use-package delight :ensure t)
+(use-package use-package-ensure-system-package :ensure t)
 #+END_SRC
 
 ** Email with Mu4e
