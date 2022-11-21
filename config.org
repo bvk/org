@@ -484,6 +484,56 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
   )
 #+END_SRC
 
+** IRC Config
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-irc.el
+(use-package circe
+  :commands circe
+
+  :preface
+  (defun my-circe-count-nicks ()
+    "Display the number of users connected on the current channel."
+    (interactive)
+    (when (eq major-mode 'circe-channel-mode)
+      (message "%i users are online on %s."
+               (length (circe-channel-nicks)) (buffer-name))))
+
+  (defun my-circe-fetch-password (&rest params)
+    "Fetch the NickServ password for an username."
+    (require 'auth-source)
+    (let ((match (car (apply 'auth-source-search params))))
+      (if match
+          (let ((secret (plist-get match :secret)))
+            (if (functionp secret)
+                (funcall secret)
+              secret))
+        (error "Password not found for %S" params))))
+
+  (defun my-circe-nickserv-password (server)
+    "Fetch the NickServ password for the Libera Chat."
+    (my-circe-fetch-password :login "bvk" :machine "irc.libera.chat"))
+
+  :custom
+  (circe-default-part-message nil)
+  (circe-default-quit-message nil)
+  (circe-format-say (format "{nick:+%ss}: {body}" 8))
+  (circe-network-options
+   '(("Libera Chat"
+      :nick "bvk"
+      :tls t
+      :port 6697
+      :server-buffer-name "Libera Chat"
+      :channels (:after-auth "#emacs" "#go-nuts")
+      :nickserv-password my-circe-nickserv-password)))
+  (circe-reduce-lurker-spam t)
+  (circe-use-cycle-completion t)
+
+  :config
+  (circe-lagmon-mode)
+  (enable-circe-color-nicks)
+  (enable-circe-display-images))
+#+END_SRC
+
 ** OrgMode config
 
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-orgmode.el
