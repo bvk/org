@@ -337,13 +337,13 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
   "Updates the frame font with a larger font size."
   (interactive)
   (progn (setq my-font-size (+ my-font-size my-font-step-size))
-         (set-frame-font (my-font-name my-font-size) nil)))
+         (set-frame-font (my-font-name my-font-size) nil t t)))
 
 (defun my-font-decrease ()
   "Updates the frame font with a smaller font size."
   (interactive)
   (progn (setq my-font-size (- my-font-size my-font-step-size))
-         (set-frame-font (my-font-name my-font-size) nil)))
+         (set-frame-font (my-font-name my-font-size) nil t t)))
 
 (add-to-list 'default-frame-alist (cons 'font (my-font-name my-font-size)))
 #+END_SRC
@@ -574,7 +574,7 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
   (if (get-buffer "st-256color")
       (switch-to-buffer "st-256color")
     (start-process "terminal" "*Messages*" "st"
-                   "-f" (my-frame-font)
+                   "-f" (my-font-name my-font-size)
                    "-e" "bash")))
 (defun my-x11-open-xephyr () ;; FIXME: Attache the sawfish startup script.
   "Open Xephyr window with sawfish."
