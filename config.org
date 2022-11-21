@@ -534,6 +534,20 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
   (enable-circe-display-images))
 #+END_SRC
 
+** Spell Checking
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-spell-check.el
+(use-package flyspell
+  :ensure nil
+  :delight
+  :hook ((text-mode . flyspell-mode)
+         (prog-mode . flyspell-prog-mode))
+  :custom
+  (flyspell-default-dictionary "en_US")
+  (flyspell-issue-message-flag nil)
+  (flyspell-issue-welcome-flag nil))
+#+END_SRC
+
 ** OrgMode config
 
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-orgmode.el
