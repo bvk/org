@@ -469,8 +469,11 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
                 :query "maildir:/bvkchaitanya@gmail.com/Inbox OR maildir:/bvkother@gmail.com/Inbox"
                 :key ?i))
 
-  ;; Start mu4e in the background so that it syncs mail periodically
-  (mu4e t))
+  ;; DONT Start mu4e in the background cause it asks for password
+  ;; immediately and conflicts with the exwm setup. It should only be
+  ;; started manually.
+  ;(mu4e t)
+  )
 #+END_SRC
 
 ** OrgMode config
