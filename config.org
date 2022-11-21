@@ -477,6 +477,12 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
   (package-install 'org))
 (require 'org)
 
+;; ob-async package enables asynchronous execution of org-babel code
+;; blocks using the :async tag.
+(unless (package-installed-p 'ob-async)
+  (package-install 'ob-async))
+(require 'ob-async)
+
 (setq org-directory (expand-file-name "~/org"))
 ;; TAB key in source blocks indents as per the source block major mode.
 (setq org-src-preserve-indentation nil)
