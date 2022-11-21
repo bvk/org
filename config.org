@@ -378,6 +378,7 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 ** GnuPG and Passwords config
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-gpg.el
 (setq auth-source-debug t)
+(setq auth-sources '("~/.authinfo.gpg"))
 
 (setenv "GPG_AGENT_INFO" nil)
 (setenv "INSIDE_EMACS" (format "%s,comint" emacs-version))
