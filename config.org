@@ -332,20 +332,32 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 (defun my-font-name (size)
   "Returns the font name for the given size."
   (format "Ubuntu Mono-%d:hintstyle=hintslight:rgba=rgb" size))
+(defun my-variable-font-name (size)
+  "Returns the variable-pitch font name for the given size."
+  (format "Ubuntu-%d:hintstyle=hintslight:rgba=rgb" size))
 
 (defun my-font-increase ()
   "Updates the frame font with a larger font size."
   (interactive)
   (progn (setq my-font-size (+ my-font-size my-font-step-size))
+         (set-face-font 'default (my-font-name my-font-size))
+         (set-face-font 'fixed-pitch (my-font-name my-font-size))
+         (set-face-font 'variable-pitch (my-variable-font-name my-font-size))
          (set-frame-font (my-font-name my-font-size) nil t t)))
 
 (defun my-font-decrease ()
   "Updates the frame font with a smaller font size."
   (interactive)
   (progn (setq my-font-size (- my-font-size my-font-step-size))
+         (set-face-font 'default (my-font-name my-font-size))
+         (set-face-font 'fixed-pitch (my-font-name my-font-size))
+         (set-face-font 'variable-pitch (my-variable-font-name my-font-size))
          (set-frame-font (my-font-name my-font-size) nil t t)))
 
-(add-to-list 'default-frame-alist (cons 'font (my-font-name my-font-size)))
+(set-face-font 'default (my-font-name my-font-size))
+(set-face-font 'fixed-pitch (my-font-name my-font-size))
+(set-face-font 'variable-pitch (my-variable-font-name my-font-size))
+
 #+END_SRC
 
 ** Shell Search PATH
