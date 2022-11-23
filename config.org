@@ -215,6 +215,26 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
     screen -t shell 1 /bin/bash
 	  #+END_SRC
 
+** X11 Wallpaper                                                     :ATTACH:
+:PROPERTIES:
+:ID:       703c8927-19e5-44c6-97ae-aa196344751f
+:END:
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/my-org-publish.el
+(when (require 'ox-publish nil 'noerror)
+  (add-to-list 'org-publish-project-alist
+               '("publish-wallpaper"
+                 :base-directory "~/org/wallpaper"
+                 :exclude ".*"
+                 :include ["blank.jpg"]
+                 :recursive nil
+                 :publishing-directory "~/.wallpaper/"
+                 :publishing-function org-publish-attachment)))
+#+END_SRC
+
+We can run =emacsclient -e '(org-publish "publish-wallpaper" t)'=
+command to create the wallpaper file at =~/.wallpaper/blank.jpg=.
+
 ** =~/.fonts= directory                                              :ATTACH:
 	 :PROPERTIES:
 	 :ID:       d89df2d5-632b-41d8-b6b9-cc1107599d9e
