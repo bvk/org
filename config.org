@@ -236,32 +236,28 @@ We can run =emacsclient -e '(org-publish "publish-wallpaper" t)'=
 command to create the wallpaper file at =~/.wallpaper/blank.jpg=.
 
 ** =~/.fonts= directory                                              :ATTACH:
-	 :PROPERTIES:
-	 :ID:       d89df2d5-632b-41d8-b6b9-cc1107599d9e
-	 :DIR:      ~/org/fonts
-	 :END:
+:PROPERTIES:
+:ID:       d89df2d5-632b-41d8-b6b9-cc1107599d9e
+:DIR:      ~/org/fonts
+:END:
 
-	 We must create a ~/.fonts directory with custom font files. We use org-mode
-	 attachments to store the font files and use org-publish project to copy them
-	 into the ~/.fonts directory.
+We want to create a =~/.fonts= directory with custom font files. We
+use org-mode attachments to store the font files and use org-publish
+project to copy them into the =~/.fonts= directory.
 
-	 When emacs loads this file using org-babel-load-file it will update the
-	 org-publish-project-alist with config-fonts for this task. When this project
-	 is published it will perform the necessary copying.
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/my-org-publish.el
+(when (require 'ox-publish nil 'noerror)
+  (add-to-list 'org-publish-project-alist
+               '("publish-fonts"
+                 :base-directory "~/org/fonts"
+                 :base-extension "ttf"
+                 :recursive nil
+                 :publishing-directory "~/.fonts/"
+                 :publishing-function org-publish-attachment)))
+#+END_SRC
 
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (when (require 'ox-publish nil 'noerror)
-     (add-to-list 'org-publish-project-alist
-                  '("config-fonts"
-                    :base-directory "~/org/fonts"
-                    :base-extension "ttf"
-                    :recursive nil
-                    :publishing-directory "~/.fonts/"
-                    :publishing-function org-publish-attachment)))
-	 #+END_SRC
-
-	 We can run emacs --eval '(org-publish "config-fonts")' to create the
-	 ~/.fonts directory.
+We can run =emacsclient -e '(org-publish "publish-fonts" t)'= to copy
+Ubuntu fonts into the =~/.fonts= directory.
 
 ** =~/.ssh/config=
 
