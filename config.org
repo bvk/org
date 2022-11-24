@@ -987,57 +987,7 @@ gtk-key-theme-name = Emacs
    Channel bvkchaitanya-gmail-spam
    Channel bvkchaitanya-gmail-drafts
    #+END_SRC
-** Fonts
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (defvar my-frame-font-list nil
-     "List of font names for use with the my-frame-font-rotate
-        function")
-   (setq my-frame-font-index nil)
-   (defun my-frame-font ()
-     "Returns the current frame font from the
-      my-frame-font-list. Returns 6x13 if current frame font is not
-      activated from the my-frame-font-list."
-     (interactive)
-     (if (eq (length my-frame-font-list) 0) "6x13"
-       (let* ((num-font (length my-frame-font-list)))
-         (if (eq num-font 0) "6x13"
-           (let* ((last-index (if (integerp my-frame-font-index) my-frame-font-index -1)))
-             (if (< last-index 0) "6x13"
-               (nth (mod last-index num-font) my-frame-font-list)))))))
 
-   (defun my-frame-font-rotate ()
-     "Update the frame font with next font name from the
-        my-frame-font-list. Current font index is tracked in
-        my-frame-font-index variable. If index is nil it will be
-        initialized to zero; otherwise it will be incremented by one
-        and may wrap around when reaches to end of the font list."
-     (interactive)
-     (when (> (length my-frame-font-list) 0)
-       (let* ((num-font (length my-frame-font-list))
-              (last-index (if (integerp my-frame-font-index)
-                              my-frame-font-index -1))
-              (next-index (mod (+ last-index 1) num-font))
-              (next-font (nth next-index my-frame-font-list)))
-         (progn
-           (set-frame-font next-font nil t)
-           (message (format "font is set to %s at index %d" next-font next-index))
-           (setq my-frame-font-index next-index)))))
-
-   (add-to-list 'my-frame-font-list "Ubuntu Mono-12:hintstyle=hintslight:rgba=rgb" t)
-   (add-to-list 'my-frame-font-list "Ubuntu Mono-14:hintstyle=hintslight:rgba=rgb" t)
-   (add-to-list 'my-frame-font-list "Ubuntu Mono-16:hintstyle=hintslight:rgba=rgb" t)
-   (add-to-list 'my-frame-font-list "Ubuntu Mono-18:hintstyle=hintslight:rgba=rgb" t)
-   (add-to-list 'my-frame-font-list "Ubuntu Mono-20:hintstyle=hintslight:rgba=rgb" t)
-   (add-to-list 'my-frame-font-list "Ubuntu Mono-22:hintstyle=hintslight:rgba=rgb" t)
-   (add-to-list 'my-frame-font-list "Ubuntu Mono-24:hintstyle=hintslight:rgba=rgb" t)
-   (add-to-list 'my-frame-font-list "Ubuntu Mono-26:hintstyle=hintslight:rgba=rgb" t)
-   (add-to-list 'my-frame-font-list "Ubuntu Mono-28:hintstyle=hintslight:rgba=rgb" t)
-
-   (add-to-list 'default-frame-alist
-                '(font . "Ubuntu Mono-16:hintstyle=hintslight:rgba=rgb"))
-	 #+END_SRC
-
-** Magit
 ** Orgmode
 	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (setq org-directory (expand-file-name "~/org"))
