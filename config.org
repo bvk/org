@@ -99,56 +99,70 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 
 ** =~/.gnupg=
 
-	 #+BEGIN_SRC text :mkdirp yes :tangle ~/.gnupg/gpg-agent.conf
-   default-cache-ttl 120
-   max-cache-ttl 600
+#+BEGIN_SRC text :mkdirp yes :tangle ~/.gnupg/gpg-agent.conf
+default-cache-ttl 120
+max-cache-ttl 600
 
-   enable-ssh-support
+enable-ssh-support
 
-   allow-emacs-pinentry
-   allow-loopback-entry
-	 #+END_SRC
+allow-emacs-pinentry
+allow-loopback-entry
+#+END_SRC
 
 ** =~/.bashrc=
 
-	 Include the default Debian .bashrc content first and then override it with
-	 our customizations. This will ensure that we get a familiar environment
-	 before the customizations.
+We include the standard Debian ~.bashrc~ content first and then
+override it with our customization. This will ensure that we get a
+familiar environment before the customization.
 
-	 #+BEGIN_SRC bash :tangle ~/.bashrc
-   if test -f /etc/skel/.bashrc; then
-       source /etc/skel/.bashrc
-   fi
-	 #+END_SRC
+#+BEGIN_SRC bash :tangle ~/.bashrc
+if test -f /etc/skel/.bashrc; then
+    source /etc/skel/.bashrc
+fi
+#+END_SRC
 
-   #+BEGIN_SRC bash :tangle ~/.bashrc
-   if test -f $HOME/.environment; then
-       source $HOME/.environment
-   fi
-   if test -f $HOME/.environment-$HOSTNAME; then
-       source $HOME/.environment-$HOSTNAME
-   fi
-   #+END_SRC
+#+BEGIN_SRC bash :tangle ~/.bashrc
+if test -f $HOME/.environment; then
+    source $HOME/.environment
+fi
+if test -f $HOME/.environment-$HOSTNAME; then
+    source $HOME/.environment-$HOSTNAME
+fi
+#+END_SRC
 
 ** =~/.bash_profile=
 
-   Make the login shell also read ~/.bashrc file.
+Make the login shell also read ~~/.bashrc~ file.
 
-   #+BEGIN_SRC bash :tangle ~/.bash_profile
-   if test -f $HOME/.bashrc; then
-       . $HOME/.bashrc
-   fi
-   #+END_SRC
+#+BEGIN_SRC bash :tangle ~/.bash_profile
+if test -f $HOME/.bashrc; then
+    . $HOME/.bashrc
+fi
+#+END_SRC
 
 ** =~/.bash_login=
 
-   Make the login shell also read ~/.bashrc file.
+Make the login shell also read ~~/.bashrc~ file.
 
-   #+BEGIN_SRC bash :tangle ~/.bash_profile
-   if test -f $HOME/.bashrc; then
-       . $HOME/.bashrc
-   fi
-   #+END_SRC
+#+BEGIN_SRC bash :tangle ~/.bash_profile
+if test -f $HOME/.bashrc; then
+    . $HOME/.bashrc
+fi
+#+END_SRC
+
+*** Override system binaries with user binaries
+
+#+BEGIN_SRC bash :tangle ~/.bashrc
+if ! test -d $HOME/bin; then
+    mkdir $HOME/bin
+fi
+
+if ! test -d $HOME/go/bin; then
+    mkdir -p $HOME/go/bin
+fi
+
+export PATH=$HOME/bin:$HOME/go/bin:$PATH
+#+END_SRC
 
 *** Aliases for bitcoin cash binaries
 
@@ -166,20 +180,6 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
        alias bitcoin-cli-abc='$HOME/tools/bitcoin-abc/bin/bitcoin-cli -datadir=/localzpool/bch-abc'
    fi
    #+END_SRC
-
-*** Override system binaries with user binaries
-
-	  #+BEGIN_SRC bash :tangle ~/.bashrc
-    if ! test -d $HOME/bin; then
-        mkdir $HOME/bin
-    fi
-
-    if ! test -d $HOME/go/bin; then
-        mkdir -p $HOME/go/bin
-    fi
-
-    export PATH=$HOME/bin:$HOME/go/bin:$PATH
-    #+END_SRC
 
 ** =~/.screenrc=
 
