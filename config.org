@@ -537,20 +537,10 @@ gtk-key-theme-name = Emacs
       (message "%i users are online on %s."
                (length (circe-channel-nicks)) (buffer-name))))
 
-  (defun my-circe-fetch-password (&rest params)
-    "Fetch the NickServ password for an username."
-    (require 'auth-source)
-    (let ((match (car (apply 'auth-source-search params))))
-      (if match
-          (let ((secret (plist-get match :secret)))
-            (if (functionp secret)
-                (funcall secret)
-              secret))
-        (error "Password not found for %S" params))))
-
   (defun my-circe-nickserv-password (server)
     "Fetch the NickServ password for the Libera Chat."
-    (my-circe-fetch-password :login "bvk" :machine "irc.libera.chat"))
+    (require 'auth-source)
+    (auth-source-pick-first-password :host server :user "bvk"))
 
   :custom
   (circe-default-part-message nil)
