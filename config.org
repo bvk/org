@@ -55,13 +55,18 @@ apt-get install -y eog
 apt-get install -y firefox
 #+END_SRC
 
-** Switch to Golang-1.14
+** Install the latest Golang version and tools
 
-	 #+BEGIN_SRC bash
-   go get golang.org/dl/go1.14
-   go1.14 download
-   ln -snf $HOME/go/bin/go1.14 $HOME/bin/go
-	 #+END_SRC
+#+BEGIN_SRC bash :results none :session *go1.19*
+go install golang.org/dl/go1.19@latest
+go1.19 download
+#+END_SRC
+
+#+BEGIN_SRC bash :results none :session *go-tools*
+go1.19 install golang.org/x/tools/gopls@latest
+go1.19 install golang.org/x/tools/cmd/goimports@latest
+go1.19 install golang.org/x/tools/cmd/guru@latest
+#+END_SRC
 
 * Dot Files
 
