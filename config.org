@@ -279,19 +279,19 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCWTvx3XZFM9YVgxS+aDJ6gZBJR/BFec0/C8yYgBI+G
 
 ** =~/.gtkrc-2.0=
 
-	 #+BEGIN_SRC text :mkdirp yes :tangle ~/.gtkrc-2.0
-   # Get firefox to use emacs keybindings
-   include "/usr/share/themes/Emacs/gtk-2.0-key/gtkrc"
-   gtk-key-theme-name = "Emacs"
-	 #+END_SRC
+#+BEGIN_SRC text :mkdirp yes :tangle ~/.gtkrc-2.0
+# Get firefox to use emacs keybindings
+include "/usr/share/themes/Emacs/gtk-2.0-key/gtkrc"
+gtk-key-theme-name = "Emacs"
+#+END_SRC
 
 ** =~/.config/gtk-3.0/settings.ini=
 
-	 #+BEGIN_SRC text :mkdirp yes :tangle ~/.config/gtk-3.0/settings.ini
-   # Get firefox to use emacs keybindings
-   [Settings]
-   gtk-key-theme-name = Emacs
-	 #+END_SRC
+#+BEGIN_SRC text :mkdirp yes :tangle ~/.config/gtk-3.0/settings.ini
+# Get firefox to use emacs keybindings
+[Settings]
+gtk-key-theme-name = Emacs
+#+END_SRC
 
 * Emacs
 ** Editing config
