@@ -8,28 +8,52 @@ to manually setup the symlinks to their respective dot files.
 
 See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-simultaneously-in-org-mode][How to Publish using org-mode]]
 
+* Background Notes
+** Executing bash code blocks in this file.
+
+The following emacs-lisp config adds shell scripts to the list of code
+block types enabled for /org-babel-execute/ mechanism.
+
+#+BEGIN_SRC emacs-lisp :results none
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((shell . t)))
+#+END_SRC
+
+The following example illustrates how to define a bash code block to
+run under ~sudo~ context with the ~org-babel-execute-src-block~
+function. A shell session is opened in a buffer named ~*example*~ and
+commands in the code block are executed sequentially.
+
+#+BEGIN_SRC bash :dir /sudo:: :results none :session *example*
+pwd
+whoami
+#+END_SRC
+
 * Packages
 
-	Perhaps, we should split these commands their respective config file
-	sections.
+We can install all the following commands in one go by running
+~org-babel-execute-src-block~ with the cursor anywhere in the
+block. All commands will run in a single bash session, which can be
+seen in the buffer named ~*apt-get*~.
 
-  #+BEGIN_SRC bash
-  apt-get install -y build-essential
-  apt-get install -y golang-go
-  apt-get install -y git
+#+BEGIN_SRC bash :dir /sudo:: :results none :session *apt-get*
+apt-get install -y build-essential
+apt-get install -y golang-go
+apt-get install -y git
 
-  apt-get install -y screen
+apt-get install -y screen
 
-  apt-get install -y xserver-xorg
-  apt-get install -y xdg-utils
-  apt-get install -y stterm
-  apt-get install -y stterm suckless-tools
+apt-get install -y xserver-xorg xserver-xephyr dwm
+apt-get install -y xdg-utils
 
-  apt-get install -y sawfish
-  apt-get install -y sawfish-themes
+apt-get install -y feh
+apt-get install -y stterm
+apt-get install -y suckless-tools
 
-  apt-get install -y eog # Picture viewer.
-  #+END_SRC
+apt-get install -y eog
+apt-get install -y firefox
+#+END_SRC
 
 ** Switch to Golang-1.14
 
