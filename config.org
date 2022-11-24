@@ -1425,58 +1425,66 @@ Xft.antialias: 1
 
 ** =~/.xsession=
 
-	 Run an ssh-agent instance for the session.
+Run an ssh-agent instance for the session.
 
-   #+BEGIN_SRC bash :tangle ~/.xsession
-   #!/bin/bash
-   source $HOME/.bashrc
-   #+END_SRC
+#+BEGIN_SRC bash :tangle ~/.xsession
+#!/bin/bash
+source $HOME/.bashrc
+#+END_SRC
 
-   #+BEGIN_SRC bash :tangle ~/.xsession
-   # Enable/Disable DPMS (Energy Star) features.
-   xset -dpms
+#+BEGIN_SRC bash :tangle ~/.xsession
+# Enable/Disable DPMS (Energy Star) features.
+xset -dpms
 
-   # Enable/Disable blank the video device.
-   # xset s noblank
+# Enable/Disable blank the video device.
+# xset s noblank
 
-   # Enable/Disable the screensaver.
-   # xset s off
+# Enable/Disable the screensaver.
+# xset s off
 
-   # Enable/Disable access control.
-   # xhost +SI:localuser:$USER
-   #+END_SRC
+# Enable/Disable access control.
+# xhost +SI:localuser:$USER
+#+END_SRC
 
-   Use gpg-agent with ssh-agent capability. SSH capability is enabled in the
-   =~/.gnupg/gpg-agent.conf= file above.
+Use gpg-agent with ssh-agent capability. SSH capability is enabled in the
+=~/.gnupg/gpg-agent.conf= file above.
 
-   #+BEGIN_SRC bash :tangle ~/.xsession
-   gpg-agent
-   #+END_SRC
+#+BEGIN_SRC bash :tangle ~/.xsession
+gpg-agent
+#+END_SRC
 
-   #+BEGIN_SRC bash :tangle ~/.xsession
-   xrdb -merge ~/.Xresources
-   if test -f $HOME/.Xresources-$HOSTNAME; then
-     xrdb -merge $HOME/.Xresources-$HOSTNAME
-   fi
-   #+END_SRC
+#+BEGIN_SRC bash :tangle ~/.xsession
+xrdb -merge ~/.Xresources
+if test -f $HOME/.Xresources-$HOSTNAME; then
+  xrdb -merge $HOME/.Xresources-$HOSTNAME
+fi
+#+END_SRC
 
-   #+BEGIN_SRC bash :tangle ~/.xsession
-   if test -f $HOME/.xsession-$HOSTNAME; then
-     source $HOME/.xsession-$HOSTNAME
-   fi
-   #+END_SRC
+Configure the background wallpaper.
 
-   #+BEGIN_SRC bash :tangle ~/.xsession
-   # Start Sawfish
-   exec sawfish
-   #+END_SRC
+#+BEGIN_SRC bash :tangle ~/.xsession
+if test -f $HOME/.wallpaper/blank.jpg; then
+  feh --bg-scale ${HOME}/.wallpaper/blank.jpg
+fi
+#+END_SRC
+
+#+BEGIN_SRC bash :tangle ~/.xsession
+if test -f $HOME/.xsession-$HOSTNAME; then
+  source $HOME/.xsession-$HOSTNAME
+fi
+#+END_SRC
+
+#+BEGIN_SRC bash :tangle ~/.xsession
+# Start the window manager.
+exec dwm.winkey
+#+END_SRC
 
 *** =~/.xsession-steam=
 
-   #+BEGIN_SRC bash :tangle ~/.xsession-steam
-   # Use custom DPI for the 4k, 24" monitor
-   xandr --dpi 184
-   #+END_SRC
+#+BEGIN_SRC bash :tangle ~/.xsession-steam
+# Use custom DPI for the 4k, 24" monitor
+xandr --dpi 184
+#+END_SRC
 
 * Footnotes
 * COMMENT Local variables [must be the last block]
