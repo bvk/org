@@ -30,7 +30,82 @@ pwd
 whoami
 #+END_SRC
 
-* Packages
+* Debian
+
+** Repositories
+
+I want to install most of the packages from ~stable~ channel, and also
+have the ability to install packages from ~testing~ and ~unstable~ if
+necessary. We achieve this using ~apt-get~ preferences files along
+with the ~testing~ and ~unstable~ source listing files.
+
+*** Stable Repository
+
+#+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/stable.list
+deb http://ftp.us.debian.org/debian/ stable main contrib non-free
+deb-src http://ftp.us.debian.org/debian/ stable main contrib non-free
+#+END_SRC
+
+#+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/stable.pref
+# 500 <= P < 990: causes a version to be installed unless there is a
+# version available belonging to the target release or the installed
+# version is more recent
+
+Package: *
+Pin: release a=stable
+Pin-Priority: 900
+#+END_SRC
+
+*** Testing Repository
+
+#+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/testing.list
+deb http://ftp.us.debian.org/debian/ testing main contrib non-free
+deb-src http://ftp.us.debian.org/debian/ testing main contrib non-free
+#+END_SRC
+
+#+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/testing.pref
+# 100 <= P < 500: causes a version to be installed unless there is a
+# version available belonging to some other distribution or the installed
+# version is more recent
+
+Package: *
+Pin: release a=testing
+Pin-Priority: 400
+#+END_SRC
+
+*** Unstable Repository
+
+#+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/unstable.list
+deb http://ftp.us.debian.org/debian/ unstable main contrib non-free
+deb-src http://ftp.us.debian.org/debian/ unstable main contrib non-free
+#+END_SRC
+
+#+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/unstable.pref
+# 0 < P < 100: causes a version to be installed only if there is no
+# installed version of the package
+
+Package: *
+Pin: release a=unstable
+Pin-Priority: 50
+#+END_SRC
+
+*** Experimental Repository
+
+#+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/experimental.list
+deb http://ftp.us.debian.org/debian/ experimental main contrib non-free
+deb-src http://ftp.us.debian.org/debian/ experimental main contrib non-free
+#+END_SRC
+
+#+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/experimental.pref
+# 0 < P < 100: causes a version to be installed only if there is no
+# installed version of the package
+
+Package: *
+Pin: release a=experimental
+Pin-Priority: 1
+#+END_SRC
+
+** Packages
 
 We can install all the following commands in one go by running
 ~org-babel-execute-src-block~ with the cursor anywhere in the
