@@ -760,6 +760,13 @@ gtk-key-theme-name = Emacs
 (require 'term)
 (define-key term-raw-map (kbd "<C-left>") 'windmove-left)
 (define-key term-raw-map (kbd "<C-right>") 'windmove-right)
+;; Enlarge current window vertically by closing the above window.
+(defun my-delete-window-above ()
+  "Delete window in direction 'above."
+  (interactive)
+  (when-let ((w (window-in-direction 'above)))
+    (delete-window w)))
+(global-set-key (kbd "C-x ^") 'my-delete-window-above)
 
 ;; Paste with mouse.
 (global-set-key (kbd "<mouse-2>") 'clipboard-yank)
