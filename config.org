@@ -1,18 +1,20 @@
 #+TITLE: Config in Org-Mode
 
-This is an experiment to configure my systems using a single, org-publish
-command.
+This is an experiment to track all customization I do on my systems
+in a single, org-mode file.
 
-Normally, I have a git repo with configuration files for all tools, but I have
-to manually setup the symlinks to their respective dot files.
+Org-Mode has features like ~org-babel-tangle~ and ~org-babel-execute~
+which can create publish config files and execute code blocks defined
+in an org-mode file. We could use these features to create near
+reproducible development environments across multiple systems.
 
 See [[https://emacs.stackexchange.com/questions/24645/exporting-and-tangling-simultaneously-in-org-mode][How to Publish using org-mode]]
 
-* Background Notes
-** Executing bash code blocks in this file.
+* Org-Mode Background Notes
+** Executing bash code blocks
 
 The following emacs-lisp config adds shell scripts to the list of code
-block types enabled for /org-babel-execute/ mechanism.
+block types enabled for ~org-babel-execute~ mechanism.
 
 #+BEGIN_SRC emacs-lisp :results none
 (org-babel-do-load-languages
@@ -20,12 +22,19 @@ block types enabled for /org-babel-execute/ mechanism.
  '((shell . t)))
 #+END_SRC
 
-The following example illustrates how to define a bash code block to
-run under ~sudo~ context with the ~org-babel-execute-src-block~
-function. A shell session is opened in a buffer named ~*example*~ and
-commands in the code block are executed sequentially.
+Since executing arbitrary shell code could be dangerous, we don't want
+to enable this by default in Emacs. Use ~C-x C-e~ to enable it as
+necessary.
 
-#+BEGIN_SRC bash :dir /sudo:: :results none :session *example*
+*** Execute bash code blocks under ~sudo~
+
+The following example illustrates how to define a bash code block to
+run under ~sudo~ context. When we run ~org-babel-execute-src-block~
+with the cursor inside the code block, a shell session is created in a
+buffer named ~*org-sudo-bash*~ and commands in the code block are
+executed sequentially.
+
+#+BEGIN_SRC bash :dir /sudo:: :results none :session *org-sudo-bash*
 pwd
 whoami
 #+END_SRC
@@ -34,17 +43,22 @@ whoami
 
 ** Repositories
 
-I want to install most of the packages from ~stable~ channel, and also
-have the ability to install packages from ~testing~ and ~unstable~ if
-necessary. We achieve this using ~apt-get~ preferences files along
-with the ~testing~ and ~unstable~ source listing files.
+We want to install most of the packages from the ~stable~ channel. We
+also want to install packages selectively from ~testing~ and
+~unstable~ if and when necessary. We achieve this using ~apt-get~
+preferences files.
 
 *** Stable Repository
+
+Add the ~stable~ repository to the ~apt-get~ sources directory.
 
 #+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/stable.list
 deb http://ftp.us.debian.org/debian/ stable main contrib non-free
 deb-src http://ftp.us.debian.org/debian/ stable main contrib non-free
 #+END_SRC
+
+Set a high priority to the ~stable~ channel, so that matching package
+is always chosen from this repository.
 
 #+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/stable.pref
 # 500 <= P < 990: causes a version to be installed unless there is a
@@ -58,10 +72,16 @@ Pin-Priority: 900
 
 *** Testing Repository
 
+Add the ~testing~ repository to the ~apt-get~ sources directory.
+
 #+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/testing.list
 deb http://ftp.us.debian.org/debian/ testing main contrib non-free
 deb-src http://ftp.us.debian.org/debian/ testing main contrib non-free
 #+END_SRC
+
+Set a medium priority to the ~testing~ channel. We can install a
+package from ~testing~ using ~apt-get -t testing install pkg-name~
+command when necessary.
 
 #+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/testing.pref
 # 100 <= P < 500: causes a version to be installed unless there is a
@@ -75,10 +95,16 @@ Pin-Priority: 400
 
 *** Unstable Repository
 
+Add the ~unstable~ repository to the ~apt-get~ sources directory.
+
 #+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/unstable.list
 deb http://ftp.us.debian.org/debian/ unstable main contrib non-free
 deb-src http://ftp.us.debian.org/debian/ unstable main contrib non-free
 #+END_SRC
+
+Set a very low priority to the ~unstable~ channel. Similar to
+~testing~, we can use ~apt-get -t unstable install pkg-name~ to
+install packages from here selectively.
 
 #+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/unstable.pref
 # 0 < P < 100: causes a version to be installed only if there is no
@@ -91,10 +117,14 @@ Pin-Priority: 50
 
 *** Experimental Repository
 
+Also add the ~experimental~ repository to the ~apt-get~ sources directory.
+
 #+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/experimental.list
 deb http://ftp.us.debian.org/debian/ experimental main contrib non-free
 deb-src http://ftp.us.debian.org/debian/ experimental main contrib non-free
 #+END_SRC
+
+Set the lowest priority to the ~experimental~ channel.
 
 #+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/experimental.pref
 # 0 < P < 100: causes a version to be installed only if there is no
@@ -107,12 +137,14 @@ Pin-Priority: 1
 
 ** Packages
 
-We can install all the following commands in one go by running
+We can install all our favorite packages in one go by running
 ~org-babel-execute-src-block~ with the cursor anywhere in the
-block. All commands will run in a single bash session, which can be
-seen in the buffer named ~*apt-get*~.
+block.
 
-#+BEGIN_SRC bash :dir /sudo:: :results none :session *apt-get*
+#+BEGIN_SRC bash :dir /sudo:: :results none :session *org-sudo-bash*
+apt-get update
+apt-get install -y apt-show-versions
+
 apt-get install -y build-essential
 apt-get install -y golang-go
 apt-get install -y git
@@ -132,29 +164,63 @@ apt-get install -y firefox
 
 ** Install the latest Golang version and tools
 
-#+BEGIN_SRC bash :results none :session *go1.19*
-go install golang.org/dl/go1.19@latest
-go1.19 download
+The default golang compiler from Debian stable could be too old, so
+install the latest version in the user's ~$HOME~ directory.
+
+#+BEGIN_SRC bash :results none :session *org-bash*
+go install golang.org/dl/go1.18@latest && ~/go/bin/go1.18 download
+go install golang.org/dl/go1.19@latest && ~/go/bin/go1.19 download
 #+END_SRC
 
-#+BEGIN_SRC bash :results none :session *go-tools*
-go1.19 install golang.org/x/tools/gopls@latest
-go1.19 install golang.org/x/tools/cmd/goimports@latest
-go1.19 install golang.org/x/tools/cmd/guru@latest
+Select the default go version with a symlink in users's ~$HOME/bin~
+directory. We will prepend the ~$HOME/bin~ directory to ~$PATH~ in
+~~/.bashrc~ file.
+
+#+BEGIN_SRC bash :results none :session *org-bash*
+mkdir -p ~/bin
+ln -snf ~/go/bin/go1.19 ~/bin/go
+#+END_SRC
+
+Install golang tools required by Emacs golang configuration.
+
+#+BEGIN_SRC bash :results none :session *org-bash*
+~/bin/go install golang.org/x/tools/gopls@latest
+~/bin/go install golang.org/x/tools/cmd/goimports@latest
+~/bin/go install golang.org/x/tools/cmd/guru@latest
 #+END_SRC
 
 * Dot Files
 
-	We setup all dot files (and directories) here. All codeblocks are configured
-	with org-babel-tangle target, so when users run org-babel-tangle command it
-	will overwrite the existing dot files.
+All dot file config code blocks are configured with a
+~org-babel-tangle~ target, so when ~org-babel-tangle~ command is run,
+it will *overwrite* the existing dot files.
+
+We also configure a local file-save hook at the end of this file, so
+that when we save this file, code block changes will update the target
+dot files automatically.
 
 ** =~/.environment=
 
-#+BEGIN_SRC text :tangle ~/.environment
-HOSTNAME=$(hostname -s)
-export HOSTNAME
+Instead of modifying the standard bash startup config files directly,
+I like to save my bash config in a custom file and load it from the
+~~/.bashrc~ file.
+
+*** Configure ~$PATH~ variable
+
+Add ~$HOME/bin~ and ~$HOME/go/bin~ directories to the ~$PATH~
+environment variable.
+
+#+BEGIN_SRC bash :tangle ~/.environment
+export PATH=$HOME/bin:$HOME/go/bin:$PATH
 #+END_SRC
+
+*** Export hostname as a variable
+
+#+BEGIN_SRC bash :tangle ~/.environment
+export HOSTNAME=$(hostname -s)
+#+END_SRC
+
+*** Unlimited bash history
 
 #+BEGIN_SRC bash :tangle ~/.environment
 # Eternal bash history.
@@ -172,23 +238,28 @@ export HISTFILE=~/.bash_eternal_history
 PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 #+END_SRC
 
-** =~/.gnupg=
+*** Aliases for BCH/XEC binaries
 
-#+BEGIN_SRC text :mkdirp yes :tangle ~/.gnupg/gpg-agent.conf
-default-cache-ttl 120
-max-cache-ttl 600
+These values are only meant for the server where bitcoin data
+directory really exists.
 
-enable-ssh-support
+#+BEGIN_SRC bash :tangle ~/.environment
+if test -d /localzpool/bch-bchn -a -d $HOME/tools/bitcoin-cash-node; then
+    alias bitcoind-bchn='$HOME/tools/bitcoin-cash-node/bin/bitcoind -datadir=/localzpool/bch-bchn'
+    alias bitcoin-cli-bchn='$HOME/tools/bitcoin-cash-node/bin/bitcoin-cli -datadir=/localzpool/bch-bchn'
+fi
 
-allow-emacs-pinentry
-allow-loopback-entry
+if test -d /localzpool/bch-abc -a -d $HOME/tools/bitcoin-abc; then
+    alias bitcoind-abc='$HOME/tools/bitcoin-abc/bin/bitcoind -datadir=/localzpool/bch-abc'
+    alias bitcoin-cli-abc='$HOME/tools/bitcoin-abc/bin/bitcoin-cli -datadir=/localzpool/bch-abc'
+fi
 #+END_SRC
 
 ** =~/.bashrc=
 
-We include the standard Debian ~.bashrc~ content first and then
-override it with our customization. This will ensure that we get a
-familiar environment before the customization.
+We include the standard Debian ~.bashrc~ content first and then load
+our customization at the end. This will ensure that we get a familiar
+environment before the customization.
 
 #+BEGIN_SRC bash :tangle ~/.bashrc
 if test -f /etc/skel/.bashrc; then
@@ -200,6 +271,8 @@ fi
 if test -f $HOME/.environment; then
     source $HOME/.environment
 fi
+
+# Load host specific config if it exists.
 if test -f $HOME/.environment-$HOSTNAME; then
     source $HOME/.environment-$HOSTNAME
 fi
@@ -225,36 +298,17 @@ if test -f $HOME/.bashrc; then
 fi
 #+END_SRC
 
-*** Override system binaries with user binaries
+** =~/.gnupg=
 
-#+BEGIN_SRC bash :tangle ~/.bashrc
-if ! test -d $HOME/bin; then
-    mkdir $HOME/bin
-fi
+#+BEGIN_SRC text :mkdirp yes :tangle ~/.gnupg/gpg-agent.conf
+default-cache-ttl 120
+max-cache-ttl 600
 
-if ! test -d $HOME/go/bin; then
-    mkdir -p $HOME/go/bin
-fi
+enable-ssh-support
 
-export PATH=$HOME/bin:$HOME/go/bin:$PATH
+allow-emacs-pinentry
+allow-loopback-entry
 #+END_SRC
-
-*** Aliases for bitcoin cash binaries
-
-    These values are only meant for the milk server where bitcoin data
-    directory really exists.
-
-   #+BEGIN_SRC bash :tangle ~/.bashrc
-   if test -d /localzpool/bch-bchn -a -d $HOME/tools/bitcoin-cash-node; then
-       alias bitcoind-bchn='$HOME/tools/bitcoin-cash-node/bin/bitcoind -datadir=/localzpool/bch-bchn'
-       alias bitcoin-cli-bchn='$HOME/tools/bitcoin-cash-node/bin/bitcoin-cli -datadir=/localzpool/bch-bchn'
-   fi
-
-   if test -d /localzpool/bch-abc -a -d $HOME/tools/bitcoin-abc; then
-       alias bitcoind-abc='$HOME/tools/bitcoin-abc/bin/bitcoind -datadir=/localzpool/bch-abc'
-       alias bitcoin-cli-abc='$HOME/tools/bitcoin-abc/bin/bitcoin-cli -datadir=/localzpool/bch-abc'
-   fi
-   #+END_SRC
 
 ** =~/.screenrc=
 
