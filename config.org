@@ -910,49 +910,6 @@ gtk-key-theme-name = Emacs
 (global-set-key (kbd "C-j") #'my-keybindings-transient)
 #+END_SRC
 
-** Load customizations
-
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   ;; save customizations in a separate file
-   (setq custom-file "~/.emacs-custom.el")
-   (when (file-exists-p custom-file)
-     (load custom-file))
-	 #+END_SRC
-
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   ;; open the default org-mode file on startup.
-   (setq initial-buffer-choice t)
-   #+END_SRC
-
-** Personal Information
-
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (setq user-full-name "BVK Chaitanya")
-   (setq user-mail-address "bvkchaitanya@gmail.com")
-	 #+END_SRC
-
-** TODO Load and Search Paths
-
-	 We could get rid of this with attachments.
-
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (when (file-exists-p "~/config/emacs/emacs.d")
-     (add-to-list 'load-path "~/config/emacs/emacs.d"))
-	 #+END_SRC
-
-
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (setenv "PATH"
-           (concat (getenv "HOME") "/bin" ":"
-                   (getenv "HOME") "/go/bin" ":"
-                   (getenv "PATH")))
-   ;; Emacs uses exec-path instead of the PATH
-   (setq exec-path (split-string (getenv "PATH") ":"))
-
-   ;; Also, update the tramp-default-remote-path.
-   (setq tramp-default-remote-path "~/bin:~/go/bin:/bin:/usr/bin")
-	 #+END_SRC
-
 ** Packages
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (require 'package)
@@ -995,56 +952,6 @@ gtk-key-theme-name = Emacs
 
    (require 'view)
    #+END_SRC
-** Customizations
-
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (setq-default tab-width 2)
-   (setq-default indent-tabs-mode nil)
-	 #+END_SRC
-
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (setq visible-bell t)
-   (setq show-trailing-whitespace t)
-   (setq split-height-threshold nil)             ; Disable vertical window splitting
-   (setq display-time-day-and-date t)
-   ;; Merge system's and Emacs' clipboards.
-   (setq select-enable-primary t)
-   (setq select-enable-clipboard t)
-   (global-set-key (kbd "<mouse-2>") 'clipboard-yank)
-   (defalias 'yes-or-no-p 'y-or-n-p)
-	 #+END_SRC
-
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (ido-mode t)
-   (show-paren-mode 1)
-   (menu-bar-mode 0)
-   (tooltip-mode nil)
-   (blink-cursor-mode 0)
-   (display-time-mode 1)
-   (column-number-mode 1)
-   ;; emacs-nox has no scroll-bar-mode
-   (when (functionp 'scroll-bar-mode)
-     (scroll-bar-mode 0))
-   ;; emacs-nox has no tool-bar-mode
-   (when (functionp 'tool-bar-mode)
-     (tool-bar-mode 0))
-	 #+END_SRC
-
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (add-to-list 'default-frame-alist '(right-fringe . 0))
-   (add-to-list 'default-frame-alist '(cursor-color . "green"))
-	 #+END_SRC
-
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (add-hook 'before-save-hook 'delete-trailing-whitespace)
-	 #+END_SRC
-
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (require 'epa-file)
-   (epa-file-enable)
-   ;; Does this need (pinentry-start) from pinentry package?
-   (setq epg-pinentry-mode 'loopback)
-	 #+END_SRC
 
 ** Receive GMail over IMAP with =mbsync=
    #+BEGIN_SRC conf :tangle ~/.mbsyncrc
@@ -1114,24 +1021,6 @@ gtk-key-theme-name = Emacs
    Channel bvkchaitanya-gmail-drafts
    #+END_SRC
 
-** Orgmode
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (setq org-directory (expand-file-name "~/org"))
-   ;; TAB key in source blocks indents as per the source block major mode.
-   (setq org-src-preserve-indentation nil)
-   (setq org-edit-src-content-indentation 0)
-   (setq org-src-tab-acts-natively t)
-   ;; org-agent will not change the window layout.
-   (setq org-agenda-window-setup 'current-window)
-
-   ;; org-capture config.
-   (setq org-default-notes-file (concat org-directory "/notes.org"))
-   (setq org-capture-templates
-         '(("t" "Todo" entry (file+headline "~/org/tasks.org" "Tasks")
-            "* TODO %?\n  %i\n  %a")
-           ("n" "Note" entry (file+datetree "~/org/notes.org")
-            "* %?\nEntered on %U\n  %i\n  %a")))
-	 #+END_SRC
 ** Exwm
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
    (require 'exwm)
@@ -1243,20 +1132,7 @@ gtk-key-theme-name = Emacs
    (setq my-go-coverage-out-relpath "build/coverage.out")
    #+END_SRC
 
-** IRC
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (require 'rcirc)
 
-   ;; Do not display JOIN, QUIT, etc. messages
-   (add-hook 'rcirc-mode-hook (lambda () (rcirc-omit-mode)))
-   (setq erc-hide-list '("JOIN" "PART" "QUIT"))
-
-   ;; Show alerts on mode-line when messages are addressed to me
-   (add-hook 'rcirc-mode-hook (lambda () (rcirc-track-minor-mode 1)))
-
-   ;; Autojoin channels.
-   (setq erc-autojoin-channels-alist
-         '(("freenode.net" "#emacs" "#go-nuts" "#nethack")))
    #+END_SRC
 ** Keybindings
 *** TODO We should define magit like popup window for all subcommands
@@ -1429,12 +1305,6 @@ gtk-key-theme-name = Emacs
      (global-set-key (kbd "C-j") #'my-keybindings-transient)
      #+END_SRC
 
-** Gtags
-
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (when (require 'gtags nil 'noerror)
-     nil)
-   #+END_SRC
 
 ** TODO Directory Locals
 
