@@ -41,6 +41,12 @@ whoami
 
 * Debian
 
+** Force ~apt-get~ to use only IPv4
+
+#+BEGIN_SRC conf :tangle /sudo::/etc/apt/apt.conf.d/99force-ipv4
+Acquire::ForceIPv4 "true";
+#+END_SRC
+
 ** Repositories
 
 We want to install most of the packages from the ~stable~ channel. We
