@@ -1431,9 +1431,43 @@ Xft.lcdfilter: lcddefault
 ,*color15:               S_base3
 #+END_SRC
 
-** =~/.xsession=
+** ~~/.sxhkdrc~
 
-Run an ssh-agent instance for the session.
+Package ~sxhkd~ provides an X11 hotkey daemon. We use it to open the program
+launcher. We prepare the config file here and start the daemon from
+~~/.xsession~ file.
+
+#+BEGIN_SRC conf :mkdirp yes :tangle ~/.config/sxhkd/sxhkdrc
+# Reload the hotkey daemon
+super + shift + r
+	pkill -usr1 -x sxhkd
+
+super + r
+	dmenu_run
+
+super + e
+  emacs
+
+super + f
+  firefox-esr
+
+super + t
+	st -f 'Ubuntu Mono-14'
+
+XF86Display
+	adjust-xrandr --display-order "$XRANDR_DISPLAY_ORDER"
+
+XF86AudioLowerVolume
+  pactl -- set-sink-volume @DEFAULT_SINK@ -10%
+
+XF86AudioRaiseVolume
+  pactl -- set-sink-volume @DEFAULT_SINK@ +10%
+
+XF86AudioMute
+  pactl -- set-sink-mute @DEFAULT_SINK@ toggle
+#+END_SRC
+
+** =~/.xsession=
 
 #+BEGIN_SRC bash :tangle ~/.xsession
 #!/bin/bash
