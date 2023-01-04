@@ -1,4 +1,4 @@
-#+TITLE: Config in Org-Mode
+#+TITLE: All Configs in Org-Mode
 
 This is an experiment to track all customization I do on my systems
 in a single, org-mode file.
@@ -26,7 +26,7 @@ Since executing arbitrary shell code could be dangerous, we don't want
 to enable this by default in Emacs. Use ~C-x C-e~ to enable it as
 necessary.
 
-*** Execute bash code blocks under ~sudo~
+** Execute bash code blocks under ~sudo~
 
 The following example illustrates how to define a bash code block to
 run under ~sudo~ context. When we run ~org-babel-execute-src-block~
@@ -53,6 +53,18 @@ We want to install most of the packages from the ~stable~ channel. We
 also want to install packages selectively from ~testing~ and
 ~unstable~ if and when necessary. We achieve this using ~apt-get~
 preferences files.
+
+It can be risky to maintain packages from different channels. The following
+commands can help. Also, see https://wiki.debian.org/DontBreakDebian
+
+#+BEGIN_SRC bash
+apt-cache show <package>         # to see information on a package
+apt-cache showpkg <virtual-pkg>  # to list packages providing virtual-pkg
+apt-cache policy <package>       # to see version information for a package
+apt-cache depends <package>      # to dependencies of a package
+aptitude why <package>           # to see reason why a package is installed
+aptitude why-not <package>       # to see reasons why a package cannot be installed
+#+END_SRC
 
 *** Stable Repository
 
@@ -149,23 +161,48 @@ block.
 
 #+BEGIN_SRC bash :dir /sudo:: :results none :session *org-sudo-bash*
 apt-get update
+apt-get install -y aptitude
 apt-get install -y apt-show-versions
 
+# Essentials.
 apt-get install -y build-essential
 apt-get install -y golang-go
 apt-get install -y git
-
 apt-get install -y screen
 
-apt-get install -y xserver-xorg xserver-xephyr dwm
-apt-get install -y xdg-utils
+# Emacs
+apt-get install -y gpg
+apt-get install -y isync
+apt-get install -y mu4e
+apt-get install -y bogofilter
+apt-get install -y cmake
+apt-get install -y ttf-ubuntu-font-family
 
+# X11
+apt-get install -y xserver-xorg
+apt-get install -y xinit
+apt-get install -y xserver-xephyr
+apt-get install -y wdm
+apt-get install -y x11-apps
+apt-get install -y sxhkd
 apt-get install -y feh
+apt-get install -y dwm
 apt-get install -y stterm
 apt-get install -y suckless-tools
 
-apt-get install -y eog
+# Audio & Video
+apt-get install -y pulseaudio
+apt-get install -y pavucontrol
+apt-get install -y mplayer
+apt-get install -y ffmpeg
+apt-get install -y imagemagick
+
+# Internet
 apt-get install -y firefox
+
+# System Tray apps
+apt-get install -y pasystray
+apt-get install -y cbatticon
 #+END_SRC
 
 ** Install the latest Golang version and tools
@@ -234,7 +271,7 @@ export PATH=$HOME/bin:$HOME/go/bin:$PATH
 export HOSTNAME=$(hostname -s)
 #+END_SRC
 
-*** Unlimited bash history
+*** Setup unlimited bash history
 
 #+BEGIN_SRC bash :tangle ~/.environment
 # Eternal bash history.
@@ -252,7 +289,7 @@ export HISTFILE=~/.bash_eternal_history
 PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 #+END_SRC
 
-*** Aliases for BCH/XEC binaries
+*** Setup aliases for BCH/XEC binaries
 
 These values are only meant for the server where bitcoin data
 directory really exists.
@@ -314,6 +351,10 @@ fi
 
 ** =~/.gnupg=
 
+Following gnupg config file configures the ~gpg-agent~ to also take the
+~ssh-agent~ role. We must run ~gpg-agent~ and configure the ~SSH_AUTH_SOCK~
+variable appropriately in ~~/.xsession~ file.
+
 #+BEGIN_SRC text :mkdirp yes :tangle ~/.gnupg/gpg-agent.conf
 default-cache-ttl 120
 max-cache-ttl 600
@@ -326,66 +367,67 @@ allow-loopback-entry
 
 ** =~/.screenrc=
 
-	 Include the default screen configuration from /etc/screenrc file and override
-	 it with our customizations.
+We include the default screen configuration ~/etc/screenrc~ file and
+customize it.
 
-	 #+BEGIN_SRC text :tangle ~/.screenrc
-   source /etc/screenrc
-	 #+END_SRC
+#+BEGIN_SRC conf :tangle ~/.screenrc
+source /etc/screenrc
+#+END_SRC
 
 *** Don't display startup screen
 
-	  #+BEGIN_SRC text :tangle ~/.screenrc
-    startup_message off
-	  #+END_SRC
+#+BEGIN_SRC conf :tangle ~/.screenrc
+startup_message off
+#+END_SRC
 
 *** Pick a large scrollback history
 
-	  #+BEGIN_SRC text :tangle ~/.screenrc
-    defscrollback 50000
-	  #+END_SRC
+#+BEGIN_SRC conf :tangle ~/.screenrc
+defscrollback 50000
+#+END_SRC
 
-*** Set the escape key to =C-z=
+*** Set the escape key to ~C-z~
 
-    The default escape key =C-a= is important in the sheel, so use something
-    else.
+The default escape key ~C-a~ conflicts with Emacs and BASH keybindings, so we
+use ~C-z~ instead. Users can do ~C-z C-z~ to get send one ~C-z~ key to the
+applications running inside the screen.
 
-	  #+BEGIN_SRC text :tangle ~/.screenrc
-    escape 
-	  #+END_SRC
+#+BEGIN_SRC conf :tangle ~/.screenrc
+escape 
+#+END_SRC
 
 *** Remove terminal control-flow bindings
 
-    Terminal control-flow bindings =C-s= and =C-q= cause random lockups. They
-	  are not really useful.
+Terminal control-flow bindings ~C-s~ and ~C-q~ cause random lockups. They
+are not really useful in modern terminals, so we disable them.
 
-	  #+BEGIN_SRC text :tangle ~/.screenrc
-    bind s
-    bind ^s
-    bind q
-    bind ^q
-	  #+END_SRC
+#+BEGIN_SRC conf :tangle ~/.screenrc
+bind s
+bind ^s
+bind q
+bind ^q
+#+END_SRC
 
-*** Enable =Shift-PageUp= and =Shift-PageDown= keys
+*** FIXME Enable ~Shift-PageUp~ and ~Shift-PageDown~ keys
 
-    #+BEGIN_SRC text :tangle ~/.screenrc
-    termcapinfo xterm|xterms|xs|rxvt ti@:te@
-    #+END_SRC
+#+BEGIN_SRC conf :tangle ~/.screenrc
+termcapinfo xterm|xterms|xs|rxvt ti@:te@
+#+END_SRC
 
-*** Always force using a 256 color terminal
+*** Force ~TERM~ to use 256 colors
 
-	  #+BEGIN_SRC text :tangle ~/.screenrc
-    term xterm-256color
-	  #+END_SRC
+#+BEGIN_SRC conf :tangle ~/.screenrc
+term xterm-256color
+#+END_SRC
 
 *** Start first window at 1
 
-    Start the shell in interactive-mode which reads my =~/.bashrc=
-    customizations.
+Start the shell in interactive-mode which reads my =~/.bashrc=
+customizations.
 
-	  #+BEGIN_SRC text :tangle ~/.screenrc
-    screen -t shell 1 /bin/bash
-	  #+END_SRC
+#+BEGIN_SRC conf :tangle ~/.screenrc
+screen -t shell 1 /bin/bash
+#+END_SRC
 
 ** X11 Wallpaper                                                     :ATTACH:
 :PROPERTIES:
@@ -404,8 +446,8 @@ allow-loopback-entry
                  :publishing-function org-publish-attachment)))
 #+END_SRC
 
-We can run =emacsclient -e '(org-publish "publish-wallpaper" t)'=
-command to create the wallpaper file at =~/.wallpaper/blank.jpg=.
+We can run ~emacsclient -e '(org-publish "publish-wallpaper" t)'~
+command to create the wallpaper file at ~~/.wallpaper/blank.jpg~.
 
 ** =~/.fonts= directory                                              :ATTACH:
 :PROPERTIES:
@@ -413,12 +455,12 @@ command to create the wallpaper file at =~/.wallpaper/blank.jpg=.
 :DIR:      ~/org/fonts
 :END:
 
-We want to create a =~/.fonts= directory with custom font files. We
+We want to create a ~~/.fonts~ directory with custom font files. We
 use org-mode attachments to store the font files and use org-publish
-project to copy them into the =~/.fonts= directory.
+project to copy them into the ~~/.fonts~ directory.
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/my-org-publish.el
-(when (require 'ox-publish nil 'noerror)
+(when (featurep 'ox-publish)
   (add-to-list 'org-publish-project-alist
                '("publish-fonts"
                  :base-directory "~/org/fonts"
@@ -428,95 +470,207 @@ project to copy them into the =~/.fonts= directory.
                  :publishing-function org-publish-attachment)))
 #+END_SRC
 
-We can run =emacsclient -e '(org-publish "publish-fonts" t)'= to copy
-Ubuntu fonts into the =~/.fonts= directory.
+We can run ~emacsclient -e '(org-publish "publish-fonts" t)'~ to copy
+Ubuntu fonts into the ~~/.fonts~ directory.
 
 ** =~/.ssh/config=
 
-   1. Milk server uses static ip.
+1. Milk server uses static ip.
 
-	 #+BEGIN_SRC text :mkdirp yes :tangle ~/.ssh/config
-   Host milk-home
-     HostName 192.168.0.10
-     User bvk
-	 #+END_SRC
+#+BEGIN_SRC conf :mkdirp yes :tangle ~/.ssh/config
+Host milk-home
+  HostName 192.168.0.10
+  User bvk
+#+END_SRC
 
 ** =~/.ssh/authorized_keys=
 
 Steam public key
 
-#+BEGIN_SRC text :mkdirp yes :tangle ~/.ssh/authorized_keys
+#+BEGIN_SRC conf :mkdirp yes :tangle ~/.ssh/authorized_keys
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCWTvx3XZFM9YVgxS+aDJ6gZBJR/BFec0/C8yYgBI+G0KMttHOxXuFJJ+UNtufcuPUAqe0vepDWh4bz4dimE4iDWnC5G0LJ71b8YVewtvEu5xSOmjRE38ozCfN0fwLsSvQqUaqlNexpiN+lcDL1UeKXFWzTMp8kE6WEnE7AXUk1Srl5eB0SaQz1ULp7alcq+6T+eySTEvRBzEzZQEK/ToWp8MnRjG09pitCGwnoa2OCDkNPhpUus7RlPhVlCBOjX/D74UcgVUG225sOMCsmqDK+5Y1XJgw3AHGL+9i31gc5U5FyewNHbV3LTmeOoGE2VjbfGDTsSP/i/T7F4LWLMhYL bvk@steam
 #+END_SRC
 
-** =~/.gtkrc-2.0=
+** Use Emacs keybindings in GTK apps
+*** =~/.gtkrc-2.0=
 
-#+BEGIN_SRC text :mkdirp yes :tangle ~/.gtkrc-2.0
+#+BEGIN_SRC conf :mkdirp yes :tangle ~/.gtkrc-2.0
 # Get firefox to use emacs keybindings
 include "/usr/share/themes/Emacs/gtk-2.0-key/gtkrc"
 gtk-key-theme-name = "Emacs"
 #+END_SRC
 
-** =~/.config/gtk-3.0/settings.ini=
+*** =~/.config/gtk-3.0/settings.ini=
 
-#+BEGIN_SRC text :mkdirp yes :tangle ~/.config/gtk-3.0/settings.ini
+#+BEGIN_SRC conf :mkdirp yes :tangle ~/.config/gtk-3.0/settings.ini
 # Get firefox to use emacs keybindings
 [Settings]
 gtk-key-theme-name = Emacs
 #+END_SRC
 
 * Emacs
+** Config files
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs
+;; configure package repositories and install use-package first.
+(if (file-exists-p "~/.emacs.d/my-emacs-repos.el")
+    (load-file "~/.emacs.d/my-emacs-repos.el"))
+
+;; basic emacs editing config
+(if (file-exists-p "~/.emacs.d/my-editing.el")
+    (load-file "~/.emacs.d/my-editing.el"))
+
+(if (file-exists-p "~/.emacs.d/my-shell-env.el")
+    (load-file "~/.emacs.d/my-shell-env.el"))
+
+(if (file-exists-p "~/.emacs.d/my-eglot.el")
+    (load-file "~/.emacs.d/my-eglot.el"))
+
+(if (file-exists-p "~/.emacs.d/my-gtags.el")
+    (load-file "~/.emacs.d/my-gtags.el"))
+
+(if (file-exists-p "~/.emacs.d/my-magit.el")
+    (load-file "~/.emacs.d/my-magit.el"))
+
+(if (file-exists-p "~/.emacs.d/my-gpg.el")
+    (load-file "~/.emacs.d/my-gpg.el"))
+
+(if (file-exists-p "~/.emacs.d/my-spell-check.el")
+    (load-file "~/.emacs.d/my-spell-check.el"))
+
+(if (file-exists-p "~/.emacs.d/my-orgmode.el")
+    (load-file "~/.emacs.d/my-orgmode.el"))
+
+(if (file-exists-p "~/.emacs.d/my-org-publish.el")
+    (load-file "~/.emacs.d/my-org-publish.el"))
+
+(if (file-exists-p "~/.emacs.d/my-golang.el")
+    (load-file "~/.emacs.d/my-golang.el"))
+
+(if (equal (system-name) "steam")
+    (if (file-exists-p "~/.emacs.d/my-email.el")
+        (load-file "~/.emacs.d/my-email.el")))
+
+(if (file-exists-p "~/.emacs.d/my-irc.el")
+    (load-file "~/.emacs.d/my-irc.el"))
+
+(if (file-exists-p "~/.emacs.d/my-fonts.el")
+    (load-file "~/.emacs.d/my-fonts.el"))
+
+;; load keybindings as the last item.
+(if (file-exists-p "~/.emacs.d/my-keybindings.el")
+    (load-file "~/.emacs.d/my-keybindings.el"))
+
+(if (file-exists-p "~/.emacs.d/my-exwm.el")
+    (load-file "~/.emacs.d/my-exwm.el"))
+
+;; Server start is required for mu4e/mbsync to get the password
+;; using the emacsclient command.
+(server-start)
+#+END_SRC
+
 ** Editing config
+
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-editing.el
-(setq-default tab-width 2)
-(setq-default indent-tabs-mode nil)
-(setq show-trailing-whitespace t)
-
-(setq select-enable-primary t)
-(setq select-enable-clipboard t)
-
+;; use single y or n character
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(ido-mode t)
+;; open the *scratch* buffer on startup
+(setq initial-buffer-choice t)
+
+;; don't bell with sound
 (setq visible-bell t)
 
-(show-paren-mode 1)
-(column-number-mode 1)
-(blink-cursor-mode 0)
-(display-time-mode 1)
+;; don't waste too many columns for tabs
+(setq-default tab-width 2)
+(setq-default indent-tabs-mode nil)
+(setq-default fill-column 79)
+(add-hook 'prog-mode-hook 'global-display-fill-column-indicator-mode)
 
-(menu-bar-mode 0)
-(tooltip-mode nil)
+;; display more on the status bar
+(display-time-mode 1)
+(column-number-mode 1)
+
+;; some minor UI improvements.
+(show-paren-mode 1)
+(blink-cursor-mode 0)
 (add-to-list 'default-frame-alist '(right-fringe . 0))
 (add-to-list 'default-frame-alist '(cursor-color . "green"))
 
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; use ido-mode for quicker name matching
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(ido-mode 1)
+#+END_SRC
 
-;; emacs-nox has no scroll-bar-mode
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-editing.el
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+#+END_SRC
+
+*** Sync clipboard content with X11
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-editing.el
+(setq select-enable-primary t)
+(setq select-enable-clipboard t)
+#+END_SRC
+
+*** Disable menubar, toolbar, etc.
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-editing.el
+;; disable menubar
+(menu-bar-mode 0)
+
+;; disable scrollbar; emacs-nox has no scroll-bar-mode
 (when (functionp 'scroll-bar-mode)
   (scroll-bar-mode 0))
-;; emacs-nox has no tool-bar-mode
+
+;; disable toolbar; emacs-nox has no tool-bar-mode
 (when (functionp 'tool-bar-mode)
   (tool-bar-mode 0))
+#+END_SRC
 
-(when (require 'uniquify nil 'noerror)
+*** Use unique buffer names
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-editing.el
+;; uniquify is a builtin package.
+(use-package uniquify
+  :config
   (setq uniquify-buffer-name-style 'forward))
+#+END_SRC
 
-(when (require 'org nil 'noerror)
-  (setq org-edit-src-content-indentation 0))
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-editing.el
+;; (use-package desktop
+;;   :config
+;;   (setq desktop-save 1)
+;;   (setq desktop-load-locked-desktop t)
+;;   (setq desktop-dirname user-emacs-directory)
+;;   (setq desktop-restore-frames nil)
+;;   (setq desktop-files-not-to-save "\\(^/[^/:]*:\\|(ftp)$\\)\\|\\(\\.gpg$\\)")
+;;   (desktop-save-mode 1))
+#+END_SRC
+
+*** Enhance M-x to allow easier execution of commands
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-editing.el
+(use-package smex
+  :ensure t
+  :config
+  (setq smex-save-file (concat user-emacs-directory ".smex-items"))
+  (smex-initialize)
+  :bind ("M-x" . smex))
 #+END_SRC
 
 ** Frame font
+
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-fonts.el
-(defvar my-font-size 12 "Initial font size for the frames")
+(defvar my-font-size 16 "Initial font size for the frames")
 (defvar my-font-step-size 2 "Font increment/decrement size")
 
 (defun my-font-name (size)
   "Returns the font name for the given size."
-  (format "Ubuntu Mono-%d:hintstyle=hintslight:rgba=rgb" size))
+  (format "Ubuntu Mono-%d" size))
 (defun my-variable-font-name (size)
   "Returns the variable-pitch font name for the given size."
-  (format "Ubuntu-%d:hintstyle=hintslight:rgba=rgb" size))
+  (format "Ubuntu-%d" size))
 
 (defun my-font-increase ()
   "Updates the frame font with a larger font size."
@@ -539,7 +693,6 @@ gtk-key-theme-name = Emacs
 (set-face-font 'default (my-font-name my-font-size))
 (set-face-font 'fixed-pitch (my-font-name my-font-size))
 (set-face-font 'variable-pitch (my-variable-font-name my-font-size))
-
 #+END_SRC
 
 ** Shell Search PATH
@@ -558,18 +711,26 @@ gtk-key-theme-name = Emacs
 #+END_SRC
 
 ** GnuPG and Passwords config
+*** Use ~~/.authinfo.gpg~ for passwords
+
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-gpg.el
 (setq auth-source-debug t)
 (setq auth-sources '("~/.authinfo.gpg"))
+#+END_SRC
 
-(setenv "GPG_AGENT_INFO" nil)
-(setenv "INSIDE_EMACS" (format "%s,comint" emacs-version))
+*** Ask for GPG password in Emacs
 
-(unless (package-installed-p 'pinentry)
-  (package-install 'pinentry))
-(require 'pinentry)
-(pinentry-start)
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-gpg.el
+;; pinentry is a builtin package
+(use-package pinentry
+  :config
+  (pinentry-start)
+  (setenv "GPG_AGENT_INFO" nil)
+  (setenv "INSIDE_EMACS" (format "%s,comint" emacs-version)))
+#+END_SRC
 
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-gpg.el
+;; epa-file is a builtin package
 (require 'epa-file)
 (epa-file-enable)
 (setq epg-pinentry-mode 'loopback)
@@ -579,33 +740,94 @@ gtk-key-theme-name = Emacs
 
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-emacs-repos.el
 (require 'package)
+(add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(setq package-enable-at-starup nil)
+(add-to-list 'package-archives '("org"   . "https://orgmode.org/elpa/"))
 (package-initialize)
+#+END_SRC
 
-(when (not package-archive-contents)
-  (package-refresh-contents))
+We use ~use-package~ to load and configure Emacs packages.
 
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-emacs-repos.el
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+(eval-and-compile
+  (setq use-package-always-ensure t
+        use-package-expand-minimally t))
+#+END_SRC
 
-(use-package delight :ensure t)
-(use-package use-package-ensure-system-package :ensure t)
+This ~use-package~ package has many helper /tags/, but the most
+important of them are ~:init~ and ~:config~. The following example
+describes some tags usage.
+
+#+BEGIN_SRC emacs-lisp
+(use-package <pkg-name>
+  :disabled ; disables this package configuration
+
+  :requires (pkg1 pkg2 pkg3) ; pkg-name requires pkg1, pkg2, pkg3
+
+  :init ; following code is run *before* pkg-name is loaded
+
+  ;; code
+
+  :config ; following code is run *after* pkg-name is loaded
+
+  ;; code
+
+  :bind ; custom keybindings for the pkg-name
+
+  ;; list of key bindings
+
+  ;; Following adds pkg-name-mini-mode to foo-mode-hook and bar-mode-hook
+  :hook
+  ((foo-mode bar-mode) . pkg-name-mini-mode)
+  )
 #+END_SRC
 
 ** Email with Mu4e
+
+Following configuration uses ~bogofilter~ tool to mark an email as spam or
+ham. Keybindings to mark an email as spam (or ham) are available in the
+~mu4e-headers~ view with keys ~a-S~ and ~a-h~ respectively.
+
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-email.el
 (if (file-exists-p "/usr/share/emacs/site-lisp/mu4e")
     (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e"))
 
 (when (require 'mu4e nil 'noerror)
   (require 'smtpmail)
+  (require 'mu4e-contrib)
+
+  ;; Use bogofilter for spam detection.
+  (setq mu4e-register-as-spam-cmd "bogofilter -Ns < %s")
+  (setq mu4e-register-as-ham-cmd "bogofilter -Sn < %s")
+  (add-to-list 'mu4e-headers-actions
+               '("SMark as spam" . mu4e-register-msg-as-spam) t)
+  (add-to-list 'mu4e-headers-actions
+               '("hMark as ham" . mu4e-register-msg-as-ham) t)
 
   ;; Allow for updating mail using 'U' in the main view.
   (setq mu4e-get-mail-command "mbsync -a")
   (setq mu4e-update-interval (* 10 60))
   (setq mu4e-maildir "~/Mail")
+
+  ;; Define custom column-type for the mu4e header lines.
+  (add-to-list 'mu4e-header-info-custom
+               '(:maildir-base .
+                               ( :name "Directory"  ;; long name, as seen in the message-view
+                                 :shortname "Dir"   ;; short name, as seen in the headers view
+                                 :help "Base name of the Maildir directory" ;; tooltip
+                                 :function
+                                 (lambda (msg)
+                                   (format "%s" (file-name-nondirectory
+                                                 (mu4e-message-field msg :maildir)))))))
+
+  (setq mu4e-headers-fields '((:human-date . 12)
+                              (:flags . 6)
+                              (:maildir-base . 8)
+                              (:from . 22)
+                              (:subject)))
 
   ;; Display options
   (setq mu4e-view-show-addresses 't)
@@ -621,6 +843,7 @@ gtk-key-theme-name = Emacs
   (setq message-send-mail-function 'smtpmail-send-it)
   (setq smtpmail-smtp-server "smtp.gmail.com")
   (setq smtpmail-smtp-service 587)
+  (setq mu4e-sent-messages-behavior 'delete)
 
   ;; Make sure that moving a message (like to Trash) causes the
   ;; message to get a new file name.  This helps to avoid the
@@ -639,16 +862,15 @@ gtk-key-theme-name = Emacs
             :vars '((user-mail-address . "bvkchaitanya@gmail.com")
                     (mu4e-trash-folder . "/bvkchaitanya@gmail.com/Trash")
                     (mu4e-drafts-folder . "/bvkchaitanya@gmail.com/Drafts")
-                    (mu4e-refile-folder . "/bvkchaitanya@gmail.com/Archive")
-                    (mu4e-sent-messages-behavior . 'delete)))
+                    (mu4e-refile-folder . "/bvkchaitanya@gmail.com/Archive")))
+
           ,(make-mu4e-context
             :name "bvk.other@gmail"
             :match-func (lambda (msg)
                           (when msg
                             (string-prefix-p "/bvkother@gmail.com"
                                              (mu4e-message-field msg :maildir))))
-            :vars '((mu4e-sent-messages-behavior . 'delete)
-                    (mu4e-trash-folder . "/bvkother@gmail.com/Trash")
+            :vars '((mu4e-trash-folder . "/bvkother@gmail.com/Trash")
                     (mu4e-refile-folder . "/bvkother@gmail.com/Archive")))
           ))
   (setq mu4e-context-policy 'pick-first)
@@ -662,7 +884,7 @@ gtk-key-theme-name = Emacs
   ;; DONT Start mu4e in the background cause it asks for password
   ;; immediately and conflicts with the exwm setup. It should only be
   ;; started manually.
-  ;(mu4e t)
+                                        ;(mu4e t)
   )
 #+END_SRC
 
@@ -711,7 +933,6 @@ gtk-key-theme-name = Emacs
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-spell-check.el
 (use-package flyspell
   :ensure nil
-  :delight
   :hook ((text-mode . flyspell-mode)
          (prog-mode . flyspell-prog-mode))
   :custom
@@ -723,63 +944,73 @@ gtk-key-theme-name = Emacs
 ** OrgMode config
 
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-orgmode.el
-(unless (package-installed-p 'org)
-  (package-install 'org))
-(require 'org)
+(use-package org
+  :mode (("\\.org$" . org-mode))
+  :ensure org-plus-contrib
+  :config
+  (setq org-directory (expand-file-name "~/org"))
 
+  ;; TAB key in source blocks indents as per the source block major mode.
+  (setq org-src-preserve-indentation nil)
+  (setq org-edit-src-content-indentation 0)
+  (setq org-src-tab-acts-natively t)
+
+  ;; org-agent should not change the window layout.
+  (setq org-agenda-window-setup 'current-window)
+
+  ;; org-capture config.
+  (setq org-default-notes-file (concat org-directory "/notes.org"))
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file+headline "~/org/tasks.org" "Tasks")
+           "* TODO %?\n  %i\n  %a")
+
+          ("n" "Note" entry (file+datetree "~/org/notes.org")
+           "* %?\nEntered on %U\n  %i\n  %a")))
+  )
+#+END_SRC
+
+*** Enable async mode for ~org-babel-tangle~
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-orgmode.el
 ;; ob-async package enables asynchronous execution of org-babel code
 ;; blocks using the :async tag.
-(unless (package-installed-p 'ob-async)
-  (package-install 'ob-async))
-(require 'ob-async)
+(use-package ob-async
+  :ensure t)
+#+END_SRC
 
-(setq org-directory (expand-file-name "~/org"))
-;; TAB key in source blocks indents as per the source block major mode.
-(setq org-src-preserve-indentation nil)
-(setq org-edit-src-content-indentation 0)
-(setq org-src-tab-acts-natively t)
-;; org-agent will not change the window layout.
-(setq org-agenda-window-setup 'current-window)
-
-;; org-capture config.
-(setq org-default-notes-file (concat org-directory "/notes.org"))
-(setq org-capture-templates
-      '(("t" "Todo" entry (file+headline "~/org/tasks.org" "Tasks")
-         "* TODO %?\n  %i\n  %a")
-        ("n" "Note" entry (file+datetree "~/org/notes.org")
-         "* %?\nEntered on %U\n  %i\n  %a")))
-
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-orgmode.el
 (defun my-org-capture-note ()
   "Open org-capture for a note."
   (interactive)
+  (require 'org)
   (org-capture nil "n"))
 (defun my-org-capture-task ()
   "Open org-capture for a task."
   (interactive)
+  (require 'org)
   (org-capture nil "t"))
 #+END_SRC
 
 ** Manage Git repos with Magit
 
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-magit.el
-(unless (package-installed-p 'magit)
-  (package-install 'magit))
-(require 'magit)
+(use-package magit
+  :ensure t
+  :bind (("C-x g" . magit-status)))
 #+END_SRC
 
 ** Use GNU Global for TAGS
 
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-gtags.el
-(unless (package-installed-p 'ggtags)
-  (package-install 'ggtags))
-(require 'ggtags)
+;(unless (package-installed-p 'ggtags)
+;  (package-install 'ggtags))
+;(require 'ggtags)
 #+END_SRC
 
 ** C/C++ config
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-cc.el
 (defun my-cc-mode-hook ()
   (if (featurep 'whitespace) (whitespace-mode))
-  (if (featurep 'column-marker) (column-marker-1 80))
   (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
     (ggtags-mode 1)))
 (add-hook 'c-mode-common-hook 'my-cc-mode-hook)
@@ -788,57 +1019,56 @@ gtk-key-theme-name = Emacs
 ** Golang config
 
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-golang.el
-(unless (package-installed-p 'go-mode)
-  (package-install 'go-mode))
-(require 'go-mode)
-
-;; this needs `go install golang.org/x/tools/cmd/guru@latest`
-(unless (package-installed-p 'go-guru)
-  (package-install 'go-guru))
-(require 'go-guru)
-
-(setq godoc-command "go doc -all")
-(if (executable-find "goimports")
-    (setq gofmt-command "goimports"))
-
-(defun my-go-mode-hook ()
-  (if (featurep 'whitespace) (whitespace-mode -1))
-  (if (featurep 'column-marker) (column-marker-1 80))
-  (local-set-key (kbd "M-.") 'godef-jump)
-  (local-set-key (kbd "M-,") 'pop-tag-mark)
-  (go-guru-hl-identifier-mode))
-(add-hook 'go-mode-hook 'my-go-mode-hook)
-
-(defun my-golang-find-go-module (dir)
-  (when-let ((root (locate-dominating-file dir "go.mod")))
-    (cons 'go-module root)))
+(use-package go-mode
+  :mode (("\\.go$" . go-mode))
+  :config
+  (setq godoc-command "go doc -all")
+  (setq gofmt-command "goimports")
+  :hook
+  (go-mode . (lambda() (add-hook 'before-save-hook 'gofmt-before-save))))
 #+END_SRC
 
-** Keybindings (should be last)
+** Eglot
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-eglot.el
+(use-package eglot
+  :ensure t
+  :hook ((go-mode) . eglot-ensure))
+#+END_SRC
+
+** Keybindings
+*** Disable C-z key
+
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-keybindings.el
 (global-unset-key (kbd "C-z"))
+#+END_SRC
 
+*** Use custom font resizing commands
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-keybindings.el
 ;; Increase/decrease frame font size.
 (global-set-key (kbd "C-x C-=") 'my-font-increase)
 (global-set-key (kbd "C-x C--") 'my-font-decrease)
+#+END_SRC
 
-(global-set-key (kbd "<C-left>") 'windmove-left)
-(global-set-key (kbd "<C-right>") 'windmove-right)
-;; Force same effect in ansi-term windows.
-(require 'term)
-(define-key term-raw-map (kbd "<C-left>") 'windmove-left)
-(define-key term-raw-map (kbd "<C-right>") 'windmove-right)
-;; Enlarge current window vertically by closing the above window.
-(defun my-delete-window-above ()
-  "Delete window in direction 'above."
-  (interactive)
-  (when-let ((w (window-in-direction 'above)))
-    (delete-window w)))
-(global-set-key (kbd "C-x ^") 'my-delete-window-above)
+*** Window management commands
 
-;; Paste with mouse.
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-keybindings.el
+(require 'windmove)
+(windmove-default-keybindings)
+
+(require 'winner)
+(setq winner-dont-bind-my-keys t)
+(winner-mode)
+#+END_SRC
+
+*** Paste with mouse middle click
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-keybindings.el
 (global-set-key (kbd "<mouse-2>") 'clipboard-yank)
+#+END_SRC
 
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-keybindings.el
 (defun my-x11-internet-browser ()
   "Open internet browser program."
   (interactive)
@@ -871,102 +1101,43 @@ gtk-key-theme-name = Emacs
   "Run slock to lock the screen."
   (interactive)
   (start-process "slock" "*Messages*" "slock"))
-;; END FIXME
+#+END_SRC
 
-(unless (package-installed-p 'transient)
-  (package-install 'transient))
-(require 'transient)
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-keybindings.el
+(use-package transient
+  :ensure t
+  :config
+  ;; transient popup buffer is displayed at the bottom of current window.
+  (setq transient-display-buffer-action '(display-buffer-below-selected))
 
-(define-transient-command my-keybindings-transient()
+  ;; transient popup buffer is displayed after 5 seconds.
+  (setq transient-show-popup 5))
+
+(transient-define-prefix my-keybindings-transient()
   "Launch menu with custom keybindings."
   :transient-non-suffix 'transient--do-quit-one
   ["Operations"
    ["Emacs Operations"
     ("c" "Compile" compile)
-    ("g" "Magit Status" magit-status)
-    ("o" "Switch EXWM Workspace" exwm-workspace-switch)
+;    ("g" "Magit Status" magit-status)
+;    ("o" "Switch EXWM Workspace" exwm-workspace-switch)
     ("K" "Kill Emacs" save-buffers-kill-emacs)]
 
-   ["External Programs"
-    ("t" "Open Terminal" my-x11-open-terminal)
-    ("i" "Internet Browser" my-x11-internet-browser)
-    ("S" "Take Screenshot" my-x11-take-screenshot)
-    ("X" "Open Xephr Environment" my-x11-open-xephyr)
-    ("L" "Lock Screen" my-x11-lock-screen)]
+;   ["External Programs"
+;    ("t" "Open Terminal" my-x11-open-terminal)
+;    ("i" "Internet Browser" my-x11-internet-browser)
+;    ("S" "Take Screenshot" my-x11-take-screenshot)
+;    ("X" "Open Xephr Environment" my-x11-open-xephyr)
+;    ("L" "Lock Screen" my-x11-lock-screen)]
 
    ["Orgmode Operations"
     ("A" "Show Agenda" org-agenda)
     ("N" "Capture Note" my-org-capture-note)
     ("T" "Capture Note" my-org-capture-task)]])
-
-;; transient popup buffer is displayed at the bottom of current window.
-(setq transient-display-buffer-action '(display-buffer-below-selected))
-
-;; transient popup buffer is displayed after 5 seconds.
-(setq transient-show-popup 5)
-
-;; remove C-j from all known modes and assign it to the transient popup.
-
-(when (require 'term nil 'noerror)
- (define-key term-raw-map (kbd "C-j") #'my-keybindings-transient))
-
-(define-key org-mode-map (kbd "C-j") #'my-keybindings-transient)
-;(define-key vterm-mode-map (kbd "C-j") #'my-keybindings-transient)
-;(define-key exwm-mode-map (kbd "C-j") #'my-keybindings-transient)
-;(define-key view-mode-map (kbd "C-j") #'my-keybindings-transient)
-(define-key magit-mode-map (kbd "C-j") #'my-keybindings-transient)
-(define-key magit-diff-mode-map (kbd "C-j") #'my-keybindings-transient)
-(define-key magit-file-section-map (kbd "C-j") #'my-keybindings-transient)
-
-;; The following removes C-j from scratch buffer.
-(define-key lisp-interaction-mode-map (kbd "C-j") #'my-keybindings-transient)
-
-(global-set-key (kbd "C-j") #'my-keybindings-transient)
+(global-set-key (kbd "C-c k") #'my-keybindings-transient)
 #+END_SRC
 
-** Packages
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (require 'package)
-   (setq package-enable-at-starup nil)
-   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-   (package-initialize)
-
-   (when (not package-archive-contents)
-     (package-refresh-contents))
-
-   (unless (package-installed-p 'pinentry)
-     (package-install 'pinentry))
-   (require 'pinentry)
-   (setenv "INSIDE_EMACS" (format "%s,comint" emacs-version))
-   (pinentry-start)
-
-   (unless (package-installed-p 'exwm)
-     (package-install 'exwm))
-   (require 'exwm)
-
-   (unless (package-installed-p 'magit)
-     (package-install 'magit))
-   (require 'magit)
-
-   (unless (package-installed-p 'transient)
-     (package-install 'transient))
-   (require 'transient)
-
-   (unless (package-installed-p 'go-mode)
-     (package-install 'go-mode))
-   (require 'go-mode)
-
-   (unless (package-installed-p 'bazel-mode)
-     (package-install 'bazel-mode))
-   (require 'bazel-mode)
-
-   (unless (package-installed-p 'vterm)
-     (package-install 'vterm))
-   (require 'vterm)
-
-   (require 'view)
-   #+END_SRC
-
+* Email
 ** Receive GMail over IMAP with =mbsync=
    #+BEGIN_SRC conf :tangle ~/.mbsyncrc
    IMAPAccount bvkchaitanya@gmail.com
@@ -1035,315 +1206,71 @@ gtk-key-theme-name = Emacs
    Channel bvkchaitanya-gmail-drafts
    #+END_SRC
 
-** Exwm
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (require 'exwm)
-   (exwm-enable)
+   #+BEGIN_SRC conf :tangle ~/mbsync-bvkother-gmail
+   IMAPAccount bvk.other@gmail.com
+   Host imap.gmail.com
+   User bvk.other@gmail.com
+   PassCmd "gpg -q --for-your-eyes-only --no-tty -d ~/.authinfo.gpg | awk '/machine imap.gmail.com login bvk.other@gmail.com/ {print $6}'"
+   AuthMechs LOGIN
+   SSLType IMAPS
+   SSLVersions TLSv1.2
+   #CertificateFile /usr/local/etc/openssl@1.1/cert.pem
 
-   ;; show mode-line on floating windows.
-   (add-hook 'exwm-floating-setup-hook #'exwm-layout-show-mode-line)
+   MaildirStore bvkother-gmail-local
+   Path ~/Mail/bvk.other@gmail.com/
+   Inbox ~/Mail/bvk.other@gmail.com/Inbox
+   SubFolders Verbatim
 
-   ;;(require 'exwm-config)
+   IMAPStore bvkother-gmail-remote
+   Account bvk.other@gmail.com
 
-   ;; Define number of workspaces.
-   (setq exwm-workspace-number 10)
-   (setq exwm-replace nil)
+   Channel bvkother-gmail-inbox
+   Master :bvkother-gmail-remote:"INBOX"
+   Slave :bvkother-gmail-local:"INBOX"
+   CopyArrivalDate yes
+   Create Both
+   Expunge Both
+   SyncState *
 
-   (require 'exwm-systemtray)
-   (setq exwm-systemtray-height 24)
-   (exwm-systemtray-enable)
+   Channel bvkother-gmail-trash
+   Master :bvkother-gmail-remote:"[Gmail]/Trash"
+   Slave :bvkother-gmail-local:"Trash"
+   CopyArrivalDate yes
+   Create Both
+   Expunge Both
+   SyncState *
 
-   (require 'exwm-randr)
-   (exwm-randr-enable)
+   Channel bvkother-gmail-spam
+   Master :bvkother-gmail-remote:"[Gmail]/Spam"
+   Slave :bvkother-gmail-local:"Spam"
+   CopyArrivalDate yes
+   Create Both
+   Expunge Both
+   SyncState *
 
-   ;; Make the class name as the buffer name.
-   (add-hook 'exwm-update-class-hook
-             (lambda ()
-               (exwm-workspace-rename-buffer exwm-class-name)))
+   Channel bvkother-gmail-all
+   Master :bvkother-gmail-remote:"[Gmail]/All Mail"
+   Slave :bvkother-gmail-local:"Archive"
+   CopyArrivalDate yes
+   Create Both
+   Expunge Both
+   SyncState *
 
-   ;; Enable emacs keybindings in selected apps based on their window class name.
-   (setq my-simulation-key-window-classes '("Google-chrome" "Firefox"))
-   (add-hook 'exwm-manage-finish-hook
-             (lambda ()
-               (when (and exwm-class-name (member exwm-class-name my-simulation-key-window-classes))
-                 (exwm-input-set-local-simulation-keys
-                  '(([?\C-c ?\C-c] . ?\C-c)
-                    ([?\C-b] . left)
-                    ([?\C-f] . right)
-                    ([?\C-p] . up)
-                    ([?\C-n] . down)
-                    ([?\C-a] . home)
-                    ([?\C-e] . end)
-                    ([?\M-v] . prior)
-                    ([?\C-v] . next)
-                    ([?\C-d] . delete))))))
+   Channel bvkother-gmail-drafts
+   Master :bvkother-gmail-remote:"[Gmail]/Drafts"
+   Slave :bvkother-gmail-local:"Drafts"
+   CopyArrivalDate yes
+   Create Both
+   Expunge Both
+   SyncState *
+
+   Group bvkother-gmail
+   Channel bvkother-gmail-inbox
+   Channel bvkother-gmail-trash
+   Channel bvkother-gmail-all
+   Channel bvkother-gmail-spam
+   Channel bvkother-gmail-drafts
    #+END_SRC
-** Buffers
-	 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (when (require 'uniquify nil 'noerror)
-     (setq uniquify-buffer-name-style 'forward))
-	 #+END_SRC
-** Desktop Mode
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (require 'desktop)
-   (setq desktop-save 1
-         desktop-load-locked-desktop t
-         desktop-dirname user-emacs-directory
-         desktop-restore-frames nil
-                                           ; Don't save remote files and/or *gpg files.
-         desktop-files-not-to-save "\\(^/[^/:]*:\\|(ftp)$\\)\\|\\(\\.gpg$\\)")
-   (desktop-save-mode 1)
-   #+END_SRC
-** Column Marker Mode
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (when (require 'column-marker nil 'noerror)
-     (progn
-       (add-hook 'protobuf-mode-hook (lambda() (column-marker-1 80)))
-       (add-hook 'c-mode-hook (lambda() (column-marker-1 80)))
-       (add-hook 'c++-mode-hook (lambda() (column-marker-1 80)))))
-   #+END_SRC
-** Protobuf Mode
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (when (require 'protobuf-mode nil 'noerror)
-     (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
-     (add-hook 'protobuf-mode-hook (lambda() (column-marker-1 80))))
-   #+END_SRC
-** Golang Mode
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (setq gofmt-command "goimports")
-   (setq godoc-command "go doc -all")
-
-   (add-hook 'go-mode-hook (lambda() (setq truncate-lines t)))
-   (add-hook 'go-mode-hook (lambda() (add-hook 'before-save-hook 'gofmt-before-save)))
-   #+END_SRC
-
-	 Disable whitespace mode cause gofmt takes care of proper formatting.
-
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (when (require 'whitespace nil 'noerror)
-     (add-hook 'go-mode-hook (lambda() (whitespace-mode -1))))
-   #+END_SRC
-
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (when (require 'column-marker nil 'noerror)
-     (add-hook 'go-mode-hook (lambda() (column-marker-1 80))))
-   #+END_SRC
-
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (when (require 'go-guru nil 'noerror)
-     (add-hook 'go-mode-hook #'go-guru-hl-identifier-mode))
-   #+END_SRC
-
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (defvar my-go-coverage-out-relpath "coverage.out"
-     "Relative path to coverage.out file from the project root directory.")
-   (defun my-go-coverage-this-file ()
-     (interactive)
-     (let* ((dir (locate-dominating-file buffer-file-name my-go-coverage-out-relpath))
-            (coverage-out (concat dir my-go-coverage-out-relpath)))
-       (if (file-exists-p coverage-out)
-           (go-coverage coverage-out))))
-   (setq my-go-coverage-out-relpath "build/coverage.out")
-   #+END_SRC
-
-
-   #+END_SRC
-** Keybindings
-*** TODO We should define magit like popup window for all subcommands
-
-	  We must find a decent prefix-key that is not used by any other package, so
-	  that we can use it with exwm, magit, org-capture, org-agenda, etc. commands
-	  that do not have default keybindings.
-
-    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-    (global-unset-key (kbd "C-z"))
-    #+END_SRC
-
-	  As per the Emacs keybinding documentation, "C-c letter" are reserved for the
-	  user. So, we should map all keybindings in that range here, so that we can
-	  be sure there aren't any conflicts.
-
-    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-    ;;(exwm-input-set-key (kbd "C-c o") #'exwm-workspace-switch)
-    #+END_SRC
-
-*** Window Movement
-    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-    (global-set-key (kbd "<C-left>") 'windmove-left)
-    (global-set-key (kbd "<C-right>") 'windmove-right)
-    ;; Force same effect in ansi-term windows.
-    (require 'term)
-    (define-key term-raw-map (kbd "<C-left>") 'windmove-left)
-    (define-key term-raw-map (kbd "<C-right>") 'windmove-right)
-    ;; Force
-    (exwm-input-set-key (kbd "<C-left>") (lambda() (interactive) (windmove-left)))
-    (exwm-input-set-key (kbd "<C-right>") (lambda() (interactive) (windmove-right)))
-    #+END_SRC
-** Gtags
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   (when (require 'gtags nil 'noerror)
-     nil)
-   #+END_SRC
-** TODO Directory Locals
-** Load the legacy config
-
-	 We cannot migrate all our old emacs config at once, so just load the existing
-	 config file. As we migrate each config item, we shall add it in here and
-	 remove it from the existing config.
-
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-   ;;(load-file "~/config/emacs/emacs.el")
-   #+END_SRC
-
-** Experiments
-*** Transient command example with flags and arguments
-    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-    (defun my-transient-test (&optional args)
-      (interactive
-       (list (transient-args 'my-transient)))
-             (message "args %s" args))
-    (define-infix-argument my-transient:--arg()
-      :description "My Argument"
-      :class 'transient-option
-      :shortarg "-a"
-      :argument "--arg")
-    (define-transient-command my-transient ()
-      "My Transient"
-      ["Arguments"
-       ("-s" "Switch", "--switch")
-       (my-transient:--arg)]
-      ["Actions"
-       ("d" "Action d" my-transient-test)])
-    (setq transient-display-buffer-action '(display-buffer-below-selected))
-    #+END_SRC
-
-*** Transient based Keybindings
-
-    We use C-j keybinding for the transient popup window. I never use this
-    keybinding anywhere.
-
-**** TODO Xephyr script must be tracked as an attachment
-
-     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-     (defun my-org-capture-note ()
-       "Open org-capture for a note."
-       (interactive)
-       (org-capture nil "n"))
-     (defun my-org-capture-task ()
-       "Open org-capture for a task."
-       (interactive)
-       (org-capture nil "t"))
-     (defun my-x11-internet-browser ()
-       "Open internet browser program."
-       (interactive)
-       (start-process "internet-browser" "*internet-browser*" "google-chrome"))
-     (defun my-x11-open-terminal ()
-       "Open new X11 terminal program."
-       (interactive)
-       (if (get-buffer "st-256color")
-           (switch-to-buffer "st-256color")
-         (start-process "terminal" "*Messages*" "st"
-                        "-f" (my-frame-font)
-                        "-e" "bash")))
-     (defun my-x11-open-xephyr () ;; FIXME: Attache the sawfish startup script.
-       "Open Xephyr window with sawfish."
-       (interactive)
-       (start-process "Xephyr" "*Messages*"
-                      "xinit" "/home/bvk/config/xephyr/sawfish"
-                      "--"
-                      "/usr/bin/Xephyr"
-                      ":1"
-                      "-no-host-grab"
-                      "-resizeable"))
-     (defun my-x11-take-screenshot ()
-       "Take screenshot into a png file."
-       (interactive)
-       (let* ((name (format-time-string "~/screenshot-%Y%m%d%H%M%S.png")))
-         (start-process "screenshot" "*Messages*"
-                        "bash" "-c" (concat "xwd -silent -root|convert xwd:- " name))))
-     (defun my-x11-lock-screen ()
-       "Run slock to lock the screen."
-       (interactive)
-       (start-process "slock" "*Messages*" "slock"))
-     #+END_SRC
-
-     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-     (define-transient-command my-keybindings-transient()
-       "Launch menu with custom keybindings."
-       :transient-non-suffix 'transient--do-quit-one
-       ["Operations"
-        ["Emacs Operations"
-         ("c" "Compile" compile)
-         ("f" "Rotate Font" my-frame-font-rotate)
-         ("g" "Magit Status" magit-status)
-         ("o" "Switch EXWM Workspace" exwm-workspace-switch)
-         ("K" "Kill Emacs" save-buffers-kill-emacs)]
-
-        ["External Programs"
-         ("t" "Open Terminal" my-x11-open-terminal)
-         ("i" "Internet Browser" my-x11-internet-browser)
-         ("S" "Take Screenshot" my-x11-take-screenshot)
-         ("X" "Open Xephr Environment" my-x11-open-xephyr)
-         ("L" "Lock Screen" my-x11-lock-screen)]
-
-        ["Orgmode Operations"
-         ("A" "Show Agenda" org-agenda)
-         ("N" "Capture Note" my-org-capture-note)
-         ("T" "Capture Note" my-org-capture-task)]])
-
-     ;; transient popup buffer is displayed at the bottom of current window.
-     (setq transient-display-buffer-action '(display-buffer-below-selected))
-
-     ;; transient popup buffer is displayed after 5 seconds.
-     (setq transient-show-popup 5)
-     #+END_SRC
-
-     In the EXWM mode, we assign the same "C-j" keybinding for the transient
-     command, but only for the line-mode. This enables char-mode EXWM
-     applications receive all keys, which is useful when we want to run other
-     window manager nested in the Xephr sessions. Users can switch between
-     line-mode and char-mode by toggling the mode in the mode-line.
-
-     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-     ;; remove C-j from all known modes and assign it to the transient popup.
-     (define-key org-mode-map (kbd "C-j") #'my-keybindings-transient)
-     (define-key vterm-mode-map (kbd "C-j") #'my-keybindings-transient)
-     (define-key term-raw-map (kbd "C-j") #'my-keybindings-transient)
-     (define-key exwm-mode-map (kbd "C-j") #'my-keybindings-transient)
-     (define-key view-mode-map (kbd "C-j") #'my-keybindings-transient)
-     (define-key magit-mode-map (kbd "C-j") #'my-keybindings-transient)
-     (define-key magit-diff-mode-map (kbd "C-j") #'my-keybindings-transient)
-     (define-key magit-file-section-map (kbd "C-j") #'my-keybindings-transient)
-     (define-key lisp-interaction-mode-map (kbd "C-j") #'my-keybindings-transient)
-
-     (global-set-key (kbd "C-j") #'my-keybindings-transient)
-     #+END_SRC
-
-
-** TODO Directory Locals
-
-** Experiments
-*** Window Configuration Fixes
-
-     Following block saves and restores the window configuration for the
-     orgmode "C-c '" keybinding in the source codeblocks.
-
-     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-     (defvar my/org-src-block-tmp-window-configuration nil)
-
-     (defun my/org-edit-special (&optional arg)
-       "Save current window configuration before a org-edit buffer is open."
-       (setq my/org-src-block-tmp-window-configuration (current-window-configuration)))
-
-     (defun my/org-edit-src-exit ()
-       "Restore the window configuration that was saved before org-edit-special was called."
-       (set-window-configuration my/org-src-block-tmp-window-configuration))
-
-     (eval-after-load "org"
-       `(progn
-          (advice-add 'org-edit-special :before 'my/org-edit-special)
-          (advice-add 'org-edit-src-exit :after 'my/org-edit-src-exit)))
-     #+END_SRC
 
 * X11 Setup
 ** =~/.Xresources=
@@ -1506,6 +1433,7 @@ Use gpg-agent with ssh-agent capability. SSH capability is enabled in the
 =~/.gnupg/gpg-agent.conf= file above.
 
 #+BEGIN_SRC bash :tangle ~/.xsession
+# Start gpg-agent with ssh-agent capability.
 gpg-agent
 #+END_SRC
 
@@ -1524,6 +1452,13 @@ if test -f $HOME/.wallpaper/blank.jpg; then
 fi
 #+END_SRC
 
+Start the system tray with system tray apps.
+
+#+BEGIN_SRC bash :tangle ~/.xsession
+cbatticon -c 'systemctl hibernate' &
+pasystray &
+#+END_SRC
+
 #+BEGIN_SRC bash :tangle ~/.xsession
 if test -f $HOME/.xsession-$HOSTNAME; then
   source $HOME/.xsession-$HOSTNAME
@@ -1531,8 +1466,21 @@ fi
 #+END_SRC
 
 #+BEGIN_SRC bash :tangle ~/.xsession
-# Start the window manager.
-exec dwm.winkey
+# Run the hotkey daemon in background.
+sxhkd -c $HOME/.config/sxhkd/sxhkdrc &
+#+END_SRC
+
+#+BEGIN_SRC bash :tangle ~/.xsession
+# Start either the custom window manager or the default one.
+if test -f $HOME/bin/dwm; then
+  while true; do
+    $HOME/bin/dwm;
+    cbatticon -c 'systemctl hibernate' &
+    pasystray &
+  done
+else
+  exec dwm.winkey
+fi
 #+END_SRC
 
 *** =~/.xsession-steam=
@@ -1543,9 +1491,10 @@ xandr --dpi 184
 #+END_SRC
 
 * Footnotes
-* COMMENT Local variables [must be the last block]
-Configure a buffer-local after-save-hook to tangle the codeblocks when this file
-is saved.
+** COMMENT Local variables [must be the last block]
+Configure a buffer-local after-save-hook to tangle the code blocks
+when this file is saved.
+** TODO Find out how to run tangle asynchronously
 
 ;; Local Variables:
 ;; eval: (add-hook 'after-save-hook (lambda ()(org-babel-tangle)) nil t)
