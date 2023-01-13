@@ -237,7 +237,8 @@ Install golang tools required by Emacs golang configuration.
 ** Lenovo X1 Nano laptop
 
 #+BEGIN_SRC bash :tangle ~/.environment-bvknano
-export XRANDR_DISPLAY_ORDER=DP-1,DP-2,DP-3,DP-4,eDP-1
+export XRANDR_DISPLAY_ORDER1=DP-1,DP-2,DP-3,DP-4,eDP-1
+export XRANDR_DISPLAY_ORDER2=eDP-1,DP-1,DP-2,DP-3,DP-4
 #+END_SRC
 
 * Dot Files
@@ -1396,7 +1397,10 @@ super + t
 	st -f 'Ubuntu Mono-14'
 
 XF86Display
-	adjust-xrandr --display-order "$XRANDR_DISPLAY_ORDER"
+	adjust-xrandr --display-order "$XRANDR_DISPLAY_ORDER1"
+
+super + XF86Display
+	adjust-xrandr --display-order "$XRANDR_DISPLAY_ORDER2"
 
 XF86AudioLowerVolume
   pactl -- set-sink-volume @DEFAULT_SINK@ -10%
