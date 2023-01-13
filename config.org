@@ -1494,6 +1494,16 @@ fi
 xandr --dpi 184
 #+END_SRC
 
+*** =~/.xsession-bvknano=
+
+Enable tap-to-click functionality on the touchpad. See ~xinput list~ and
+~xinput list-props~ commands to see all available devices and options for each
+device respectively.
+
+#+BEGIN_SRC bash :tangle ~/.xsession-bvknano
+xinput set-prop 19 342 1
+#+END_SRC
+
 * Footnotes
 ** COMMENT Local variables [must be the last block]
 Configure a buffer-local after-save-hook to tangle the code blocks
