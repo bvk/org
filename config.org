@@ -41,12 +41,12 @@ with the ~testing~ and ~unstable~ source listing files.
 
 *** Stable Repository
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/stable.list
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/sources.list.d/stable.list" "no")
 deb http://ftp.us.debian.org/debian/ stable main contrib non-free
 deb-src http://ftp.us.debian.org/debian/ stable main contrib non-free
 #+END_SRC
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/stable.pref
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/preferences.d/stable.pref" "no")
 # 500 <= P < 990: causes a version to be installed unless there is a
 # version available belonging to the target release or the installed
 # version is more recent
@@ -58,12 +58,12 @@ Pin-Priority: 900
 
 *** Testing Repository
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/testing.list
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/sources.list.d/testing.list" "no")
 deb http://ftp.us.debian.org/debian/ testing main contrib non-free
 deb-src http://ftp.us.debian.org/debian/ testing main contrib non-free
 #+END_SRC
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/testing.pref
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/preferences.d/testing.pref" "no")
 # 100 <= P < 500: causes a version to be installed unless there is a
 # version available belonging to some other distribution or the installed
 # version is more recent
@@ -75,12 +75,12 @@ Pin-Priority: 400
 
 *** Unstable Repository
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/unstable.list
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/sources.list.d/unstable.list" "no")
 deb http://ftp.us.debian.org/debian/ unstable main contrib non-free
 deb-src http://ftp.us.debian.org/debian/ unstable main contrib non-free
 #+END_SRC
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/unstable.pref
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/preferences.d/unstable.pref" "no")
 # 0 < P < 100: causes a version to be installed only if there is no
 # installed version of the package
 
@@ -91,12 +91,12 @@ Pin-Priority: 50
 
 *** Experimental Repository
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/experimental.list
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/sources.list.d/experimental.list" "no")
 deb http://ftp.us.debian.org/debian/ experimental main contrib non-free
 deb-src http://ftp.us.debian.org/debian/ experimental main contrib non-free
 #+END_SRC
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/experimental.pref
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/preferences.d/experimental.pref" "no")
 # 0 < P < 100: causes a version to be installed only if there is no
 # installed version of the package
 
@@ -802,7 +802,7 @@ gtk-key-theme-name = Emacs
   (package-install 'transient))
 (require 'transient)
 
-(define-transient-command my-keybindings-transient()
+(transient-define-prefix my-keybindings-transient()
   "Launch menu with custom keybindings."
   :transient-non-suffix 'transient--do-quit-one
   ["Operations"
@@ -835,6 +835,7 @@ gtk-key-theme-name = Emacs
 (when (require 'term nil 'noerror)
  (define-key term-raw-map (kbd "C-j") #'my-keybindings-transient))
 
+(require 'org)
 (define-key org-mode-map (kbd "C-j") #'my-keybindings-transient)
 ;(define-key vterm-mode-map (kbd "C-j") #'my-keybindings-transient)
 ;(define-key exwm-mode-map (kbd "C-j") #'my-keybindings-transient)
@@ -924,13 +925,13 @@ gtk-key-theme-name = Emacs
      (package-install 'go-mode))
    (require 'go-mode)
 
-   (unless (package-installed-p 'bazel-mode)
-     (package-install 'bazel-mode))
-   (require 'bazel-mode)
+   ;(unless (package-installed-p 'bazel-mode)
+   ;  (package-install 'bazel-mode))
+   ;(require 'bazel-mode)
 
-   (unless (package-installed-p 'vterm)
-     (package-install 'vterm))
-   (require 'vterm)
+   ;(unless (package-installed-p 'vterm)
+   ;  (package-install 'vterm))
+   ;(require 'vterm)
 
    (require 'view)
    #+END_SRC
@@ -1247,23 +1248,23 @@ gtk-key-theme-name = Emacs
 ** Experiments
 *** Transient command example with flags and arguments
     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-    (defun my-transient-test (&optional args)
-      (interactive
-       (list (transient-args 'my-transient)))
-             (message "args %s" args))
-    (define-infix-argument my-transient:--arg()
-      :description "My Argument"
-      :class 'transient-option
-      :shortarg "-a"
-      :argument "--arg")
-    (define-transient-command my-transient ()
-      "My Transient"
-      ["Arguments"
-       ("-s" "Switch", "--switch")
-       (my-transient:--arg)]
-      ["Actions"
-       ("d" "Action d" my-transient-test)])
-    (setq transient-display-buffer-action '(display-buffer-below-selected))
+    ;; (defun my-transient-test (&optional args)
+    ;;   (interactive
+    ;;    (list (transient-args 'my-transient)))
+    ;;          (message "args %s" args))
+    ;; (define-infix-argument my-transient:--arg()
+    ;;   :description "My Argument"
+    ;;   :class 'transient-option
+    ;;   :shortarg "-a"
+    ;;   :argument "--arg")
+    ;; (transient-define-prefix my-transient ()
+    ;;   "My Transient"
+    ;;   ["Arguments"
+    ;;    ("-s" "Switch", "--switch")
+    ;;    (my-transient:--arg)]
+    ;;   ["Actions"
+    ;;    ("d" "Action d" my-transient-test)])
+    ;; (setq transient-display-buffer-action '(display-buffer-below-selected))
     #+END_SRC
 
 *** Transient based Keybindings
@@ -1317,7 +1318,7 @@ gtk-key-theme-name = Emacs
      #+END_SRC
 
      #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
-     (define-transient-command my-keybindings-transient()
+     (transient-define-prefix my-keybindings-transient ()
        "Launch menu with custom keybindings."
        :transient-non-suffix 'transient--do-quit-one
        ["Operations"
@@ -1355,10 +1356,11 @@ gtk-key-theme-name = Emacs
 
      #+BEGIN_SRC emacs-lisp :tangle ~/.emacs
      ;; remove C-j from all known modes and assign it to the transient popup.
+     (require 'org)
      (define-key org-mode-map (kbd "C-j") #'my-keybindings-transient)
-     (define-key vterm-mode-map (kbd "C-j") #'my-keybindings-transient)
+     ;(define-key vterm-mode-map (kbd "C-j") #'my-keybindings-transient)
      (define-key term-raw-map (kbd "C-j") #'my-keybindings-transient)
-     (define-key exwm-mode-map (kbd "C-j") #'my-keybindings-transient)
+     ;(define-key exwm-mode-map (kbd "C-j") #'my-keybindings-transient)
      (define-key view-mode-map (kbd "C-j") #'my-keybindings-transient)
      (define-key magit-mode-map (kbd "C-j") #'my-keybindings-transient)
      (define-key magit-diff-mode-map (kbd "C-j") #'my-keybindings-transient)
@@ -1404,11 +1406,11 @@ gtk-key-theme-name = Emacs
 ** =~/.Xresources=
 *** XTerm
 
-#+BEGIN_SRC text :tangle ~/.Xresources
+#+BEGIN_SRC text :tangle (if (eq system-type 'gnu/linux) "~/.Xresources" "no")
 selectToClipboard: true
 #+END_SRC
 
-#+BEGIN_SRC text :tangle ~/.Xresources
+#+BEGIN_SRC text :tangle (if (eq system-type 'gnu/linux) "~/.Xresources" "no")
 xterm*metaSendsEscape: true
 xterm*allowSendEvents: true
 xterm*on2Clicks: regex [^/@ \n]+
@@ -1419,7 +1421,7 @@ xterm*on5Clicks: line
 
 *** URxvt
 
-#+BEGIN_SRC text :tangle ~/.Xresources
+#+BEGIN_SRC text :tangle (if (eq system-type 'gnu/linux) "~/.Xresources" "no")
 URxvt.internalBorder:  0
 URxvt.scrollBar: False
 URxvt.perl-ext-common: tabbed,font-size
@@ -1427,7 +1429,7 @@ URxvt.perl-ext-common: tabbed,font-size
 
 *** XFT settings
 
-#+BEGIN_SRC text :tangle ~/.Xresources
+#+BEGIN_SRC text :tangle (if (eq system-type 'gnu/linux) "~/.Xresources" "no")
 Xft.dpi: 120
 Xft.hintstyle: hintfull
 Xft.lcdfilter: lcddefault
@@ -1439,7 +1441,7 @@ Xft.antialias: 1
 
 *** Solarized theme for Xterm.
 
-#+BEGIN_SRC text :notangle ~/.Xresources
+#+BEGIN_SRC text :notangle (when (eq system-type 'gnu/linux) "~/.Xresources" "no")
 #define S_base03        #002b36
 #define S_base02        #073642
 #define S_base01        #586e75
@@ -1502,12 +1504,12 @@ Xft.antialias: 1
 
 Run an ssh-agent instance for the session.
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 #!/bin/bash
 source $HOME/.bashrc
 #+END_SRC
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 # Enable/Disable DPMS (Energy Star) features.
 xset -dpms
 
@@ -1524,11 +1526,11 @@ xset -dpms
 Use gpg-agent with ssh-agent capability. SSH capability is enabled in the
 =~/.gnupg/gpg-agent.conf= file above.
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 gpg-agent
 #+END_SRC
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 xrdb -merge ~/.Xresources
 if test -f $HOME/.Xresources-$HOSTNAME; then
   xrdb -merge $HOME/.Xresources-$HOSTNAME
@@ -1537,26 +1539,26 @@ fi
 
 Configure the background wallpaper.
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 if test -f $HOME/.wallpaper/blank.jpg; then
   feh --bg-scale ${HOME}/.wallpaper/blank.jpg
 fi
 #+END_SRC
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 if test -f $HOME/.xsession-$HOSTNAME; then
   source $HOME/.xsession-$HOSTNAME
 fi
 #+END_SRC
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 # Start the window manager.
 exec dwm.winkey
 #+END_SRC
 
 *** =~/.xsession-steam=
 
-#+BEGIN_SRC bash :tangle ~/.xsession-steam
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession-steam" "no")
 # Use custom DPI for the 4k, 24" monitor
 xandr --dpi 184
 #+END_SRC
