@@ -71,8 +71,8 @@ aptitude why-not <package>       # to see reasons why a package cannot be instal
 Add the ~stable~ repository to the ~apt-get~ sources directory.
 
 #+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/stable.list
-deb http://ftp.us.debian.org/debian/ stable main contrib non-free
-deb-src http://ftp.us.debian.org/debian/ stable main contrib non-free
+deb http://ftp.us.debian.org/debian/ stable main contrib non-free-firmware non-free
+deb-src http://ftp.us.debian.org/debian/ stable main contrib non-free-firmware non-free
 #+END_SRC
 
 Set a high priority to the ~stable~ channel, so that matching package
