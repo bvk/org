@@ -1484,6 +1484,8 @@ sxhkd -c $HOME/.config/sxhkd/sxhkdrc &
 #+BEGIN_SRC bash :tangle ~/.xsession
 # Start either the custom window manager or the default one.
 if test -f $HOME/bin/dwm; then
+  while true; do xsetroot -name "$(date)"; sleep 5; done &
+
   while true; do
     $HOME/bin/dwm;
     cbatticon -c 'systemctl hibernate' &
