@@ -189,6 +189,7 @@ apt-get install -y feh
 apt-get install -y dwm
 apt-get install -y stterm
 apt-get install -y suckless-tools
+apt-get install -y xss-lock # for screensaver locking
 
 # Audio & Video
 apt-get install -y pulseaudio
