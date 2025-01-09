@@ -360,15 +360,11 @@ fi
 
 ** =~/.gnupg=
 
-Following gnupg config file configures the ~gpg-agent~ to also take the
-~ssh-agent~ role. We must run ~gpg-agent~ and configure the ~SSH_AUTH_SOCK~
-variable appropriately in ~~/.xsession~ file.
+Following gnupg config file configures the ~gpg-agent~ for emacs.
 
 #+BEGIN_SRC text :mkdirp yes :tangle ~/.gnupg/gpg-agent.conf
 default-cache-ttl 120
 max-cache-ttl 600
-
-enable-ssh-support
 
 allow-emacs-pinentry
 allow-loopback-entry
