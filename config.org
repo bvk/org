@@ -1501,14 +1501,15 @@ fi
 xandr --dpi 184
 #+END_SRC
 
-*** =~/.xsession-bvknano=
+*** =~/.xsession-gold=
 
 Enable tap-to-click functionality on the touchpad. See ~xinput list~ and
 ~xinput list-props~ commands to see all available devices and options for each
 device respectively.
 
-#+BEGIN_SRC bash :tangle ~/.xsession-bvknano
-xinput set-prop 19 342 1
+#+BEGIN_SRC bash :tangle ~/.xsession-gold
+xinput set-prop "ELAN067B:00 04F3:31F8 Touchpad" "libinput Tapping Enabled" 1
+xinput set-prop "ELAN067B:00 04F3:31F8 Touchpad" "libinput Click Method Enabled" 0 0
 #+END_SRC
 
 * Footnotes
