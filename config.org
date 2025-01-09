@@ -199,7 +199,7 @@ apt-get install -y ffmpeg
 apt-get install -y imagemagick
 
 # Internet
-apt-get install -y firefox
+apt-get install -y firefox-esr
 
 # System Tray apps
 apt-get install -y pasystray
