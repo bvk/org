@@ -235,6 +235,13 @@ Install golang tools required by Emacs golang configuration.
 
 * Hosts
 
+** Steamdeck
+
+#+BEGIN_SRC bash :tangle ~/.environment-bvkdeck
+export XRANDR_DISPLAY_ORDER1=DisplayPort-0
+export XRANDR_DISPLAY_ORDER2=eDP
+#+END_SRC
+
 ** Lenovo X1 Nano laptop
 
 #+BEGIN_SRC bash :tangle ~/.environment-bvknano
