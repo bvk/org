@@ -589,7 +589,10 @@ gtk-key-theme-name = Emacs
 (setq-default tab-width 2)
 (setq-default indent-tabs-mode nil)
 (setq-default fill-column 79)
-(add-hook 'prog-mode-hook 'global-display-fill-column-indicator-mode)
+
+;; high-light column number 80
+(setopt display-fill-column-indicator-column 80)
+(setq global-display-fill-column-indicator-modes '(c-mode text-mode (not go-mode vterm-mode)))
 
 ;; display more on the status bar
 (display-time-mode 1)
