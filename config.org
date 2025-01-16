@@ -718,15 +718,17 @@ gtk-key-theme-name = Emacs
 ** Frame font
 
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-fonts.el
-(defvar my-font-size 16 "Initial font size for the frames")
+(defvar my-font-size 24 "Initial font size for the frames")
 (defvar my-font-step-size 2 "Font increment/decrement size")
+(defvar my-font-name "Ubuntu Sans Mono")
+(defvar my-variable-font-name "Ubuntu Sans Mono")
 
 (defun my-font-name (size)
   "Returns the font name for the given size."
-  (format "Ubuntu Mono-%d" size))
+  (format "%s-%d" my-font-name size))
 (defun my-variable-font-name (size)
   "Returns the variable-pitch font name for the given size."
-  (format "Ubuntu-%d" size))
+  (format "%s-%d" my-variable-font-name size))
 
 (defun my-font-increase ()
   "Updates the frame font with a larger font size."
