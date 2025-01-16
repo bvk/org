@@ -756,6 +756,31 @@ gtk-key-theme-name = Emacs
 (set-face-font 'variable-pitch (my-variable-font-name my-font-size))
 #+END_SRC
 
+** Icons font
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-ui.el
+(use-package nerd-icons
+  :custom
+  ;; The Nerd Font you want to use in GUI
+  ;; "Symbols Nerd Font Mono" is the default and is recommended
+  ;; but you can use any other Nerd Font if you want
+  (nerd-icons-font-family "Ubuntu Mono Nerd Font")
+  )
+#+END_SRC
+
+** Treemacs
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-ui.el
+(use-package treemacs
+  :ensure t
+  :bind ("<f5>" . treemacs)
+  :custom
+  (treemacs-is-never-other-window t)
+  :hook
+  (treemacs-mode . treemacs-project-follow-mode)
+  )
+#+END_SRC
+
 ** Shell Search PATH
 
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-shell-env.el
@@ -966,6 +991,20 @@ mu index
   ;; started manually.
                                         ;(mu4e t)
   )
+#+END_SRC
+
+** Speech to text
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-llm.el
+(if (file-exists-p "~/code/extern/whisper.el")
+    (use-package whisper
+      :load-path "~/code/extern/whisper.el"
+      :config
+      (setq whisper-install-directory "~/opt/"
+            whisper-model "base"
+            whisper-language "en"
+            whisper-translate nil
+            whisper-use-threads (/ (num-processors) 2))))
 #+END_SRC
 
 ** IRC Config
