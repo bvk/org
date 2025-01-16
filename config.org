@@ -849,13 +849,26 @@ Following configuration uses ~bogofilter~ tool to mark an email as spam or
 ham. Keybindings to mark an email as spam (or ham) are available in the
 ~mu4e-headers~ view with keys ~a-S~ and ~a-h~ respectively.
 
+We need to run the following commands to rebuild the ~mu~ index database, if
+the ~~Mail~ directory is copied into a new host or from backup:
+
+#+BEGIN_SRC
+mbsync -a
+mu init --maildir=$HOME/Mail --my-address=bvkchaitanya@gmail.com --my-address=bvk.other@gmail.com
+mu index
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-email.el
-(if (file-exists-p "/usr/share/emacs/site-lisp/mu4e")
-    (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e"))
+(if (file-exists-p "/usr/share/emacs/site-lisp/elpa-src/mu4e-1.8.14")
+    (add-to-list 'load-path "/usr/share/emacs/site-lisp/elpa-src/mu4e-1.8.14"))
 
 (when (require 'mu4e nil 'noerror)
   (require 'smtpmail)
   (require 'mu4e-contrib)
+
+  ;; Enable debug buffer if necessary.
+  (setq mu4e-mu-debug t)
+  (mu4e-toggle-logging)
 
   ;; Use bogofilter for spam detection.
   (setq mu4e-register-as-spam-cmd "bogofilter -Ns < %s")
@@ -934,10 +947,9 @@ ham. Keybindings to mark an email as spam (or ham) are available in the
   (setq mu4e-context-policy 'pick-first)
 
   (add-to-list 'mu4e-bookmarks
-               (make-mu4e-bookmark
-                :name "All Inboxes"
-                :query "maildir:/bvkchaitanya@gmail.com/Inbox OR maildir:/bvkother@gmail.com/Inbox"
-                :key ?i))
+               '(:name "All Inboxes"
+                 :query "maildir:/bvkchaitanya@gmail.com/Inbox OR maildir:/bvkother@gmail.com/Inbox"
+                 :key ?i))
 
   ;; DONT Start mu4e in the background cause it asks for password
   ;; immediately and conflicts with the exwm setup. It should only be
