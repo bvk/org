@@ -676,6 +676,45 @@ gtk-key-theme-name = Emacs
   (add-hook 'shell-dynamic-complete-functions 'bash-completion-dynamic-complete))
 #+END_SRC
 
+*** Reuse same window for the temporary buffers
+
+#+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-editing.el
+(defun left-most-window ()
+  "Return the left-most window in the current frame."
+  (let ((leftmost-window (selected-window)))
+    (walk-windows
+     (lambda (win)
+       (when (< (car (window-edges win))
+                (car (window-edges leftmost-window)))
+         (setq leftmost-window win)))
+     'nomini 'frame)
+    leftmost-window))
+
+(defun display-buffer-in-leftmost-window (buffer alist)
+  "Display BUFFER in the leftmost window, creating a new one if necessary."
+  (let ((leftmost-window (left-most-window)))
+    (message "using custom display-buffer-in-leftmost-window")
+    (if leftmost-window
+        (set-window-buffer leftmost-window buffer)
+      (split-window nil nil 'left))
+    leftmost-window))
+
+(setq display-buffer-alist
+      '(
+        ;; Anatomy of an entry.
+        ;; (BUFFER-MATCHER
+        ;;  LIST-OF-DISPLAY-FUNCTIONS
+        ;;  &optional PARAMETERS)
+
+        ((or "\\*godoc .*" "\\magit: .*")
+         (display-buffer-in-leftmost-window))
+
+        ((rx (| "*compilation*" "*Async Shell Command*" "*xref*" "*grep*"
+                 "*Help*" "*Occur*" "*Apropos*" "*Backtrace*"))
+         (display-buffer-in-leftmost-window))
+        ))
+#+END_SRC
+
 ** Frame font
 
 #+BEGIN_SRC emacs-lisp :mkdirp yes :tangle ~/.emacs.d/my-fonts.el
