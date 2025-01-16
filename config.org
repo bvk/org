@@ -766,6 +766,13 @@ gtk-key-theme-name = Emacs
 
 ;; Also, update the tramp-default-remote-path.
 (setq tramp-default-remote-path "~/bin:~/go/bin:/bin:/usr/bin")
+
+
+(if (file-exists-p "/usr/lib/x86_64-linux-gnu/emacs-libvterm/vterm-module.so")
+    (use-package vterm
+      :ensure t
+      :init
+      :load-path  "/usr/lib/x86_64-linux-gnu/emacs-libvterm"))
 #+END_SRC
 
 ** GnuPG and Passwords config
