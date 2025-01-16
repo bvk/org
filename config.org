@@ -1463,7 +1463,10 @@ super + f
   firefox-esr
 
 super + t
-	st -f 'Ubuntu Mono-14'
+	xterm -fa xft:'UbuntuSansMono-14'
+
+super + l
+  slock
 
 XF86Display
 	adjust-xrandr --display-order "$XRANDR_DISPLAY_ORDER1"
