@@ -1505,12 +1505,9 @@ xset -dpms
 # xhost +SI:localuser:$USER
 #+END_SRC
 
-Use gpg-agent with ssh-agent capability. SSH capability is enabled in the
-=~/.gnupg/gpg-agent.conf= file above.
-
 #+BEGIN_SRC bash :tangle ~/.xsession
-# Start gpg-agent with ssh-agent capability.
-gpg-agent
+# Start ssh-agent.
+eval $(ssh-agent -s)
 #+END_SRC
 
 #+BEGIN_SRC bash :tangle ~/.xsession
