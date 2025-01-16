@@ -43,7 +43,7 @@ whoami
 
 ** Force ~apt-get~ to use only IPv4
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/apt.conf.d/99force-ipv4
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/apt.conf.d/99force-ipv4" "no")
 Acquire::ForceIPv4 "true";
 #+END_SRC
 
@@ -70,7 +70,7 @@ aptitude why-not <package>       # to see reasons why a package cannot be instal
 
 Add the ~stable~ repository to the ~apt-get~ sources directory.
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/stable.list
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/sources.list.d/stable.list" "no")
 deb http://ftp.us.debian.org/debian/ stable main contrib non-free-firmware non-free
 deb-src http://ftp.us.debian.org/debian/ stable main contrib non-free-firmware non-free
 #+END_SRC
@@ -78,7 +78,7 @@ deb-src http://ftp.us.debian.org/debian/ stable main contrib non-free-firmware n
 Set a high priority to the ~stable~ channel, so that matching package
 is always chosen from this repository.
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/stable.pref
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/preferences.d/stable.pref" "no")
 # 500 <= P < 990: causes a version to be installed unless there is a
 # version available belonging to the target release or the installed
 # version is more recent
@@ -92,7 +92,7 @@ Pin-Priority: 900
 
 Add the ~testing~ repository to the ~apt-get~ sources directory.
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/testing.list
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/sources.list.d/testing.list" "no")
 deb http://ftp.us.debian.org/debian/ testing main contrib non-free
 deb-src http://ftp.us.debian.org/debian/ testing main contrib non-free
 #+END_SRC
@@ -101,7 +101,7 @@ Set a medium priority to the ~testing~ channel. We can install a
 package from ~testing~ using ~apt-get -t testing install pkg-name~
 command when necessary.
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/testing.pref
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/preferences.d/testing.pref" "no")
 # 100 <= P < 500: causes a version to be installed unless there is a
 # version available belonging to some other distribution or the installed
 # version is more recent
@@ -115,7 +115,7 @@ Pin-Priority: 400
 
 Add the ~unstable~ repository to the ~apt-get~ sources directory.
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/unstable.list
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/sources.list.d/unstable.list" "no")
 deb http://ftp.us.debian.org/debian/ unstable main contrib non-free
 deb-src http://ftp.us.debian.org/debian/ unstable main contrib non-free
 #+END_SRC
@@ -124,7 +124,7 @@ Set a very low priority to the ~unstable~ channel. Similar to
 ~testing~, we can use ~apt-get -t unstable install pkg-name~ to
 install packages from here selectively.
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/unstable.pref
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/preferences.d/unstable.pref" "no")
 # 0 < P < 100: causes a version to be installed only if there is no
 # installed version of the package
 
@@ -137,14 +137,14 @@ Pin-Priority: 50
 
 Also add the ~experimental~ repository to the ~apt-get~ sources directory.
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/sources.list.d/experimental.list
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/sources.list.d/experimental.list" "no")
 deb http://ftp.us.debian.org/debian/ experimental main contrib non-free
 deb-src http://ftp.us.debian.org/debian/ experimental main contrib non-free
 #+END_SRC
 
 Set the lowest priority to the ~experimental~ channel.
 
-#+BEGIN_SRC conf :tangle /sudo::/etc/apt/preferences.d/experimental.pref
+#+BEGIN_SRC conf :tangle (if (eq system-type 'gnu/linux) "/sudo::/etc/apt/preferences.d/experimental.pref" "no")
 # 0 < P < 100: causes a version to be installed only if there is no
 # installed version of the package
 
@@ -1395,11 +1395,11 @@ mu index
 ** =~/.Xresources=
 *** XTerm
 
-#+BEGIN_SRC text :tangle ~/.Xresources
+#+BEGIN_SRC text :tangle (if (eq system-type 'gnu/linux) "~/.Xresources" "no")
 selectToClipboard: true
 #+END_SRC
 
-#+BEGIN_SRC text :tangle ~/.Xresources
+#+BEGIN_SRC text :tangle (if (eq system-type 'gnu/linux) "~/.Xresources" "no")
 xterm*metaSendsEscape: true
 xterm*allowSendEvents: true
 xterm*on2Clicks: regex [^/@ \n]+
@@ -1410,7 +1410,7 @@ xterm*on5Clicks: line
 
 *** URxvt
 
-#+BEGIN_SRC text :tangle ~/.Xresources
+#+BEGIN_SRC text :tangle (if (eq system-type 'gnu/linux) "~/.Xresources" "no")
 URxvt.internalBorder:  0
 URxvt.scrollBar: False
 URxvt.perl-ext-common: tabbed,font-size
@@ -1420,7 +1420,7 @@ URxvt.perl-ext-common: tabbed,font-size
 
 The following settings give Mac OS X like font-rendering.
 
-#+BEGIN_SRC text :tangle ~/.Xresources
+#+BEGIN_SRC text :tangle (if (eq system-type 'gnu/linux) "~/.Xresources" "no")
 Xft.dpi: 96
 Xft.antialias: true
 Xft.hinting: true
@@ -1497,7 +1497,7 @@ Package ~sxhkd~ provides an X11 hotkey daemon. We use it to open the program
 launcher. We prepare the config file here and start the daemon from
 ~~/.xsession~ file.
 
-#+BEGIN_SRC conf :mkdirp yes :tangle ~/.config/sxhkd/sxhkdrc
+#+BEGIN_SRC conf :mkdirp yes :tangle (if (eq system-type 'gnu/linux) "~/.config/sxhkd/sxhkdrc" "no")
 # Reload the hotkey daemon
 super + shift + r
 	pkill -usr1 -x sxhkd
@@ -1535,12 +1535,12 @@ XF86AudioMute
 
 ** =~/.xsession=
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 #!/bin/bash
 source $HOME/.bashrc
 #+END_SRC
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 # Enable/Disable DPMS (Energy Star) features.
 xset +dpms
 
@@ -1557,12 +1557,12 @@ xss-lock slock &
 # xhost +SI:localuser:$USER
 #+END_SRC
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 # Start ssh-agent.
 eval $(ssh-agent -s)
 #+END_SRC
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 xrdb -merge ~/.Xresources
 if test -f $HOME/.Xresources-$HOSTNAME; then
   xrdb -merge $HOME/.Xresources-$HOSTNAME
@@ -1571,7 +1571,7 @@ fi
 
 Configure the background wallpaper.
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 if test -f $HOME/.wallpaper/blank.jpg; then
   feh --bg-scale ${HOME}/.wallpaper/blank.jpg
 fi
@@ -1579,23 +1579,23 @@ fi
 
 Start the system tray with system tray apps.
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 cbatticon -c 'systemctl hibernate' &
 pasystray &
 #+END_SRC
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 if test -f $HOME/.xsession-$HOSTNAME; then
   source $HOME/.xsession-$HOSTNAME
 fi
 #+END_SRC
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 # Run the hotkey daemon in background.
 sxhkd -c $HOME/.config/sxhkd/sxhkdrc &
 #+END_SRC
 
-#+BEGIN_SRC bash :tangle ~/.xsession
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession" "no")
 # Start either the custom window manager or the default one.
 if test -f $HOME/bin/dwm; then
   while true; do xsetroot -name "$(date)"; sleep 5; done &
@@ -1612,7 +1612,7 @@ fi
 
 *** =~/.xsession-steam=
 
-#+BEGIN_SRC bash :tangle ~/.xsession-steam
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession-steam" "no")
 # Use custom DPI for the 4k, 24" monitor
 xandr --dpi 184
 #+END_SRC
@@ -1623,7 +1623,7 @@ Enable tap-to-click functionality on the touchpad. See ~xinput list~ and
 ~xinput list-props~ commands to see all available devices and options for each
 device respectively.
 
-#+BEGIN_SRC bash :tangle ~/.xsession-gold
+#+BEGIN_SRC bash :tangle (if (eq system-type 'gnu/linux) "~/.xsession-gold" "no")
 xinput set-prop "ELAN067B:00 04F3:31F8 Touchpad" "libinput Tapping Enabled" 1
 xinput set-prop "ELAN067B:00 04F3:31F8 Touchpad" "libinput Click Method Enabled" 0 0
 #+END_SRC
