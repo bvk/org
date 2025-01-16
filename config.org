@@ -1493,13 +1493,16 @@ source $HOME/.bashrc
 
 #+BEGIN_SRC bash :tangle ~/.xsession
 # Enable/Disable DPMS (Energy Star) features.
-xset -dpms
+xset +dpms
 
 # Enable/Disable blank the video device.
 # xset s noblank
 
 # Enable/Disable the screensaver.
-# xset s off
+xset s 600
+
+# Use slock as the screen lock.
+xss-lock slock &
 
 # Enable/Disable access control.
 # xhost +SI:localuser:$USER
