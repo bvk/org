@@ -700,6 +700,8 @@ gtk-key-theme-name = Emacs
     (if leftmost-window
         (set-window-buffer leftmost-window buffer)
       (split-window nil nil 'left))
+    ;; Decrease the font size by 2 steps.
+    (with-current-buffer buffer (text-scale-decrease 2))
     leftmost-window))
 
 (setq display-buffer-alist
@@ -795,7 +797,7 @@ gtk-key-theme-name = Emacs
 ;; Also, update the tramp-default-remote-path.
 (setq tramp-default-remote-path "~/bin:~/go/bin:/bin:/usr/bin")
 
-
+;; FIXME: These paths don't make sense for Mac OS X.
 (if (file-exists-p "/usr/lib/x86_64-linux-gnu/emacs-libvterm/vterm-module.so")
     (use-package vterm
       :ensure t
@@ -989,7 +991,7 @@ mu index
   ;; DONT Start mu4e in the background cause it asks for password
   ;; immediately and conflicts with the exwm setup. It should only be
   ;; started manually.
-                                        ;(mu4e t)
+  ;(mu4e t)
   )
 #+END_SRC
 
@@ -1400,6 +1402,10 @@ selectToClipboard: true
 #+END_SRC
 
 #+BEGIN_SRC text :tangle (if (eq system-type 'gnu/linux) "~/.Xresources" "no")
+xterm*faceName: xft:UbuntuSansMono-16
+#+END_SRC
+
+#+BEGIN_SRC text :tangle (if (eq system-type 'gnu/linux) "~/.Xresources" "no")
 xterm*metaSendsEscape: true
 xterm*allowSendEvents: true
 xterm*on2Clicks: regex [^/@ \n]+
@@ -1512,7 +1518,7 @@ super + f
   firefox-esr
 
 super + t
-	xterm -fa xft:'UbuntuSansMono-14'
+	xterm -rv -fa xft:'UbuntuSansMono-14'
 
 super + l
   slock
