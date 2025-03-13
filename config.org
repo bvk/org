@@ -1426,7 +1426,7 @@ selectToClipboard: true
 #+END_SRC
 
 #+BEGIN_SRC text :tangle (if (eq system-type 'gnu/linux) "~/.Xresources" "no")
-xterm*faceName: xft:UbuntuSansMono-16
+xterm*faceName: xft:UbuntuSansMono
 #+END_SRC
 
 #+BEGIN_SRC text :tangle (if (eq system-type 'gnu/linux) "~/.Xresources" "no")
@@ -1436,6 +1436,16 @@ xterm*on2Clicks: regex [^/@ \n]+
 xterm*on3Clicks: regex [^ \n]+
 xterm*on4Clicks: regex [^#$]+
 xterm*on5Clicks: line
+xterm*faceSize: 16
+xterm*faceSize1: 14
+xterm*faceSize2: 16
+xterm*faceSize3: 18
+xterm*faceSize4: 20
+xterm*faceSize5: 22
+xterm*faceSize6: 24
+xterm*VT100*translations: #override \n\
+  Ctrl Shift <Key> L: larger-vt-font() \n\
+  Ctrl Shift <Key> S: smaller-vt-font()
 #+END_SRC
 
 *** URxvt
